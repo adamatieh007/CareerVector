@@ -1,0 +1,22 @@
+{
+  "major": "Computer Engineering",
+  "interests": [
+    "Embedded Systems",
+    "Hardware Engineering",
+    "Computer Architecture"
+  ],
+  "specializations": [
+    "FPGA",
+    "Digital Logic",
+    "Low-level Systems"
+  ],
+  "preferred_work": [
+    "low-level programming",
+    "hardware software interaction"
+  ],
+  "avoid": [
+    "sales",
+    "web development"
+  ],
+  "minimum_salary": 100000
+}

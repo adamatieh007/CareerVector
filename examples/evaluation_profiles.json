@@ -1,0 +1,42 @@
+[
+  {
+    "name": "computer hardware and FPGA",
+    "major": "Computer Engineering",
+    "interests": ["digital hardware", "FPGA", "computer architecture"],
+    "specializations": ["embedded systems", "hardware engineering"],
+    "preferred_work": ["low-level systems"],
+    "expected_onet_codes": ["17-2061.00", "17-2072.00", "15-1252.00"]
+  },
+  {
+    "name": "physics research",
+    "major": "Physics",
+    "interests": ["quantum mechanics", "experimental research", "mathematics"],
+    "specializations": ["optics", "lasers"],
+    "preferred_work": ["scientific research"],
+    "expected_onet_codes": ["19-2012.00"]
+  },
+  {
+    "name": "data science and machine learning",
+    "major": "Computer Science",
+    "interests": ["machine learning", "statistics", "data analysis"],
+    "specializations": ["artificial intelligence"],
+    "preferred_work": ["build predictive models"],
+    "expected_onet_codes": ["15-2051.00", "15-1221.00"]
+  },
+  {
+    "name": "civil infrastructure",
+    "major": "Civil Engineering",
+    "interests": ["bridges", "roads", "infrastructure"],
+    "specializations": ["structural engineering"],
+    "preferred_work": ["design physical infrastructure"],
+    "expected_onet_codes": ["17-2051.00"]
+  },
+  {
+    "name": "cybersecurity",
+    "major": "Computer Science",
+    "interests": ["cybersecurity", "network security", "vulnerability analysis"],
+    "specializations": ["penetration testing"],
+    "preferred_work": ["protect computer systems"],
+    "expected_onet_codes": ["15-1212.00", "15-1299.04"]
+  }
+]
