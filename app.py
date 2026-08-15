@@ -11,7 +11,7 @@ from careervector.profile import CareerProfile
 from careervector.text import split_csv_text
 
 
-# ---------------------------------------------------------
+# --------------------`-------------------------------------
 # PAGE CONFIG
 # ---------------------------------------------------------
 

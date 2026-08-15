@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Testing &amp; Evolution | CareerVector</title>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.16.1/dist/mermaid.min.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', async () => {
+    const blocks = [...document.querySelectorAll('.mermaid')];
+
+    const showFallback = (block, message) => {
+      if (block.dataset.source) return;
+      block.dataset.source = block.textContent.trim();
+      block.classList.add('mermaid-fallback');
+      const note = document.createElement('div');
+      note.className = 'diagram-status diagram-status-error';
+      note.textContent = message;
+      block.before(note);
+    };
+
+    if (!window.mermaid) {
+      blocks.forEach((block) => showFallback(
+        block,
+        'Diagram renderer could not load. Mermaid source is shown below so the documentation remains readable.'
+      ));
+      return;
+    }
+
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'loose',
+      theme: 'base',
+      flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: true },
+      sequence: { useMaxWidth: true, wrap: true },
+      themeVariables: {
+        background: '#ffffff',
+        primaryColor: '#eef2ff',
+        primaryTextColor: '#111827',
+        primaryBorderColor: '#4f46e5',
+        secondaryColor: '#ecfeff',
+        secondaryTextColor: '#111827',
+        secondaryBorderColor: '#0891b2',
+        tertiaryColor: '#f8fafc',
+        tertiaryTextColor: '#111827',
+        tertiaryBorderColor: '#64748b',
+        lineColor: '#475569',
+        textColor: '#111827',
+        mainBkg: '#ffffff',
+        nodeBorder: '#64748b',
+        clusterBkg: '#f8fafc',
+        clusterBorder: '#cbd5e1',
+        edgeLabelBackground: '#ffffff',
+        actorBkg: '#eef2ff',
+        actorBorder: '#4f46e5',
+        actorTextColor: '#111827',
+        actorLineColor: '#64748b',
+        signalColor: '#334155',
+        signalTextColor: '#111827',
+        labelBoxBkgColor: '#ffffff',
+        labelBoxBorderColor: '#94a3b8',
+        labelTextColor: '#111827',
+        loopTextColor: '#111827',
+        noteBkgColor: '#fff7ed',
+        noteBorderColor: '#f59e0b',
+        noteTextColor: '#111827',
+        activationBkgColor: '#dbeafe',
+        activationBorderColor: '#2563eb',
+        classText: '#111827',
+        fillType0: '#eef2ff',
+        fillType1: '#ecfeff',
+        fillType2: '#f8fafc'
+      }
+    });
+
+    // Parse every block first. A bad diagram never prevents the remaining diagrams from rendering.
+    for (let i = 0; i < blocks.length; i += 1) {
+      const block = blocks[i];
+      const source = block.textContent.trim();
+      block.dataset.source = source;
+      try {
+        await mermaid.parse(source);
+      } catch (error) {
+        block.textContent = source;
+        block.classList.add('mermaid-fallback');
+        const note = document.createElement('div');
+        note.className = 'diagram-status diagram-status-error';
+        note.textContent = `Mermaid parse error in diagram ${i + 1}: ${error?.message || error}`;
+        block.before(note);
+      }
+    }
+
+    const validBlocks = blocks.filter((block) => !block.classList.contains('mermaid-fallback'));
+    for (let i = 0; i < validBlocks.length; i += 1) {
+      const block = validBlocks[i];
+      try {
+        await mermaid.run({ nodes: [block], suppressErrors: false });
+      } catch (error) {
+        block.textContent = block.dataset.source || '';
+        block.classList.add('mermaid-fallback');
+        const note = document.createElement('div');
+        note.className = 'diagram-status diagram-status-error';
+        note.textContent = `Diagram render error: ${error?.message || error}`;
+        block.before(note);
+      }
+    }
+
+    document.documentElement.dataset.mermaidReady = 'true';
+  });
+</script>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #121a2f;
+    --panel2: #17213b;
+    --text: #edf2ff;
+    --muted: #aab7d6;
+    --accent: #7aa2ff;
+    --accent2: #70e1c3;
+    --border: #2a385f;
+    --code: #0a0f1d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+  }
+  header {
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #111a31 0%, #0b1020 65%);
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 38px 28px; }
+  h1 { margin: 0 0 10px; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.05; }
+  h2 { margin-top: 2.3rem; padding-top: .3rem; border-top: 1px solid var(--border); }
+  h3 { margin-top: 1.8rem; }
+  p, li { color: var(--muted); }
+  strong, code { color: var(--text); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .14em; color: var(--accent2); font-weight: 700; font-size: .78rem; }
+  .lede { max-width: 850px; font-size: 1.08rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .card h3 { margin-top: 0; }
+
+  .mermaid {
+    background: #ffffff;
+    color: #111827;
+    border: 1px solid #dbe3f0;
+    border-radius: 14px;
+    padding: 20px;
+    overflow-x: auto;
+    margin: 18px 0 28px;
+    min-height: 92px;
+  }
+  .mermaid svg {
+    display: block;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 auto;
+  }
+  .mermaid svg text,
+  .mermaid svg tspan {
+    fill: #111827 !important;
+  }
+  .mermaid svg .label,
+  .mermaid svg .nodeLabel,
+  .mermaid svg .edgeLabel,
+  .mermaid svg .messageText,
+  .mermaid svg .loopText,
+  .mermaid svg .noteText,
+  .mermaid svg foreignObject,
+  .mermaid svg foreignObject div,
+  .mermaid svg foreignObject span,
+  .mermaid svg foreignObject p {
+    color: #111827 !important;
+  }
+  .mermaid-fallback {
+    white-space: pre-wrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .92rem;
+    line-height: 1.55;
+    color: #111827 !important;
+    background: #f8fafc;
+  }
+  .diagram-status {
+    margin: 14px 0 -6px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    font-size: .88rem;
+  }
+  .diagram-status-error {
+    color: #7f1d1d;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+  pre {
+    background: var(--code);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    overflow-x: auto;
+  }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .92em;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+  th, td { border: 1px solid var(--border); padding: 11px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--panel2); }
+  td { color: var(--muted); }
+  .note {
+    border-left: 4px solid var(--accent2);
+    background: var(--panel);
+    padding: 12px 16px;
+    margin: 18px 0;
+    border-radius: 0 10px 10px 0;
+  }
+  .nav {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .nav a {
+    padding: 7px 11px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--panel);
+  }
+  footer {
+    margin-top: 48px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: .9rem;
+  }
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">CareerVector Engineering Design</div>
+    <h1>Testing &amp; Evolution</h1>
+    <p class="lede">Verification strategy, retrieval evaluation, failure analysis, and roadmap toward hybrid search and RAG.</p>
+
+    <div class="nav">
+      <a href="index.html">Design Index</a>
+      <a href="system_architecture.html">System Architecture</a>
+      <a href="data_pipeline.html">Data Pipeline</a>
+      <a href="retrieval_engines.html">Retrieval Engines</a>
+      <a href="ui_request_flow.html">UI & Request Flow</a>
+      <a href="testing_and_evolution.html">Testing & Evolution</a>
+    </div>
+
+  </div>
+</header>
+<main class="wrap">
+
+<section>
+  <h2>1. Testing Pyramid</h2>
+  <div class="mermaid">
+flowchart TB
+    E2E["UI / End-to-End Smoke Tests"]
+    INT["Pipeline + Retriever Integration Tests"]
+    UNIT["Unit Tests&lt;br/&gt;profile • text • scoring • model loading"]
+    UNIT --> INT
+    INT --> E2E
+  </div>
+</section>
+
+<section>
+  <h2>2. Unit-Test Targets</h2>
+  <table>
+    <thead><tr><th>Area</th><th>Representative checks</th></tr></thead>
+    <tbody>
+      <tr><td>Profile parsing</td><td>Optional fields, list normalization, salary values, empty input handling.</td></tr>
+      <tr><td>Text construction</td><td>TF-IDF weighting and semantic query formatting remain deterministic.</td></tr>
+      <tr><td>TF-IDF scoring</td><td>Known lexical matches rank above unrelated occupations.</td></tr>
+      <tr><td>Embedding scoring</td><td>Dense matrix dimensions, normalization, ranking order, avoid penalties.</td></tr>
+      <tr><td>Constraints</td><td>Minimum salary correctly removes records lacking the required wage threshold.</td></tr>
+      <tr><td>Artifacts</td><td>Helpful errors are produced when required generated files are missing.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>3. Retrieval Evaluation</h2>
+  <p>
+    Model quality should be measured on a curated set of profiles with one or more acceptable occupation targets.
+    TF-IDF and embeddings must be evaluated on the same profiles and corpus.
+  </p>
+  <div class="mermaid">
+flowchart LR
+    P[("evaluation_profiles.json")] --> T["TF-IDF"]
+    P --> E["Embeddings"]
+    T --> MT["Recall@K&lt;br/&gt;MRR&lt;br/&gt;NDCG"]
+    E --> ME["Recall@K&lt;br/&gt;MRR&lt;br/&gt;NDCG"]
+    MT --> C["Compare"]
+    ME --> C
+    C --> FA["Failure analysis"]
+  </div>
+</section>
+
+<section>
+  <h2>4. Metrics</h2>
+  <table>
+    <thead><tr><th>Metric</th><th>Why it matters</th></tr></thead>
+    <tbody>
+      <tr><td>Recall@K</td><td>Whether at least one expected occupation appears in the top recommendations.</td></tr>
+      <tr><td>MRR</td><td>Rewards retrieving a relevant occupation near the very top of the ranking.</td></tr>
+      <tr><td>NDCG@K</td><td>Useful once evaluation profiles contain multiple acceptable careers with graded relevance.</td></tr>
+      <tr><td>Latency</td><td>Captures UX cost of TF-IDF versus embedding inference.</td></tr>
+      <tr><td>Overlap@K</td><td>Shows how often the two retrieval engines agree.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>5. Failure-Analysis Taxonomy</h2>
+  <div class="mermaid">
+flowchart TD
+    BAD["Unexpected recommendation"] --> A{"Cause?"}
+    A --> L["Lexical mismatch"]
+    A --> S["Semantic over-generalization"]
+    A --> D["Dataset taxonomy limitation"]
+    A --> W["Wage join / missing wage"]
+    A --> Q["Poor profile wording"]
+    A --> C["Constraint too strict"]
+    L --> FIX["Tune / hybrid retrieval"]
+    S --> FIX
+    D --> FIX2["Add aliases / richer taxonomy"]
+    W --> FIX3["Improve SOC mapping"]
+    Q --> FIX4["UI guidance / normalization"]
+    C --> FIX5["Explain filtering"]
+  </div>
+</section>
+
+<section>
+  <h2>6. Version Roadmap</h2>
+  <div class="mermaid">
+flowchart LR
+    V1["V1&lt;br/&gt;TF-IDF baseline&lt;br/&gt;Salary filtering&lt;br/&gt;Term explanations"] --> V2["V2&lt;br/&gt;Sentence embeddings&lt;br/&gt;Streamlit frontend&lt;br/&gt;Model selector"]
+    V2 --> V3["V3&lt;br/&gt;Hybrid lexical + semantic&lt;br/&gt;Larger benchmark&lt;br/&gt;Side-by-side comparison"]
+    V3 --> V4["V4&lt;br/&gt;Optional vector index&lt;br/&gt;Location-aware wages&lt;br/&gt;User-feedback signals"]
+    V4 --> V5["V5&lt;br/&gt;RAG&lt;br/&gt;Local LLM explanations&lt;br/&gt;Evidence-grounded rationale"]
+  </div>
+</section>
+
+<section>
+  <h2>7. RAG Boundary</h2>
+  <p>
+    Sentence embeddings alone are retrieval, not RAG. A future RAG layer should retrieve occupation evidence first and
+    pass only that grounded evidence to a local language model for explanation. Ranking should remain independently testable.
+  </p>
+  <div class="mermaid">
+flowchart LR
+    P["Profile"] --> RET["Retriever"]
+    RET --> K["Top occupations + O*NET evidence"]
+    K --> LLM["Local LLM"]
+    LLM --> EX["Grounded explanation"]
+    K --> UI["Ranked result metadata"]
+    EX --> UI
+  </div>
+</section>
+
+<section>
+  <h2>8. Release Checklist</h2>
+  <ul>
+    <li>Run unit tests.</li>
+    <li>Rebuild corpus when source-data version changes.</li>
+    <li>Regenerate both model artifacts from the same processed corpus.</li>
+    <li>Run evaluation for both engines and save benchmark results.</li>
+    <li>Verify no raw datasets, virtual environments, model caches, or generated artifacts are accidentally committed.</li>
+    <li>Update design docs when model contracts or pipeline boundaries change.</li>
+  </ul>
+</section>
+
+</main>
+<footer>
+  <div class="wrap">
+    CareerVector design documentation • TF-IDF + Sentence Embeddings • O*NET + BLS • Streamlit
+  </div>
+</footer>
+</body>
+</html>

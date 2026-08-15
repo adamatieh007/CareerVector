@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Data Pipeline | CareerVector</title>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.16.1/dist/mermaid.min.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', async () => {
+    const blocks = [...document.querySelectorAll('.mermaid')];
+
+    const showFallback = (block, message) => {
+      if (block.dataset.source) return;
+      block.dataset.source = block.textContent.trim();
+      block.classList.add('mermaid-fallback');
+      const note = document.createElement('div');
+      note.className = 'diagram-status diagram-status-error';
+      note.textContent = message;
+      block.before(note);
+    };
+
+    if (!window.mermaid) {
+      blocks.forEach((block) => showFallback(
+        block,
+        'Diagram renderer could not load. Mermaid source is shown below so the documentation remains readable.'
+      ));
+      return;
+    }
+
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'loose',
+      theme: 'base',
+      flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: true },
+      sequence: { useMaxWidth: true, wrap: true },
+      themeVariables: {
+        background: '#ffffff',
+        primaryColor: '#eef2ff',
+        primaryTextColor: '#111827',
+        primaryBorderColor: '#4f46e5',
+        secondaryColor: '#ecfeff',
+        secondaryTextColor: '#111827',
+        secondaryBorderColor: '#0891b2',
+        tertiaryColor: '#f8fafc',
+        tertiaryTextColor: '#111827',
+        tertiaryBorderColor: '#64748b',
+        lineColor: '#475569',
+        textColor: '#111827',
+        mainBkg: '#ffffff',
+        nodeBorder: '#64748b',
+        clusterBkg: '#f8fafc',
+        clusterBorder: '#cbd5e1',
+        edgeLabelBackground: '#ffffff',
+        actorBkg: '#eef2ff',
+        actorBorder: '#4f46e5',
+        actorTextColor: '#111827',
+        actorLineColor: '#64748b',
+        signalColor: '#334155',
+        signalTextColor: '#111827',
+        labelBoxBkgColor: '#ffffff',
+        labelBoxBorderColor: '#94a3b8',
+        labelTextColor: '#111827',
+        loopTextColor: '#111827',
+        noteBkgColor: '#fff7ed',
+        noteBorderColor: '#f59e0b',
+        noteTextColor: '#111827',
+        activationBkgColor: '#dbeafe',
+        activationBorderColor: '#2563eb',
+        classText: '#111827',
+        fillType0: '#eef2ff',
+        fillType1: '#ecfeff',
+        fillType2: '#f8fafc'
+      }
+    });
+
+    // Parse every block first. A bad diagram never prevents the remaining diagrams from rendering.
+    for (let i = 0; i < blocks.length; i += 1) {
+      const block = blocks[i];
+      const source = block.textContent.trim();
+      block.dataset.source = source;
+      try {
+        await mermaid.parse(source);
+      } catch (error) {
+        block.textContent = source;
+        block.classList.add('mermaid-fallback');
+        const note = document.createElement('div');
+        note.className = 'diagram-status diagram-status-error';
+        note.textContent = `Mermaid parse error in diagram ${i + 1}: ${error?.message || error}`;
+        block.before(note);
+      }
+    }
+
+    const validBlocks = blocks.filter((block) => !block.classList.contains('mermaid-fallback'));
+    for (let i = 0; i < validBlocks.length; i += 1) {
+      const block = validBlocks[i];
+      try {
+        await mermaid.run({ nodes: [block], suppressErrors: false });
+      } catch (error) {
+        block.textContent = block.dataset.source || '';
+        block.classList.add('mermaid-fallback');
+        const note = document.createElement('div');
+        note.className = 'diagram-status diagram-status-error';
+        note.textContent = `Diagram render error: ${error?.message || error}`;
+        block.before(note);
+      }
+    }
+
+    document.documentElement.dataset.mermaidReady = 'true';
+  });
+</script>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #121a2f;
+    --panel2: #17213b;
+    --text: #edf2ff;
+    --muted: #aab7d6;
+    --accent: #7aa2ff;
+    --accent2: #70e1c3;
+    --border: #2a385f;
+    --code: #0a0f1d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+  }
+  header {
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #111a31 0%, #0b1020 65%);
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 38px 28px; }
+  h1 { margin: 0 0 10px; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.05; }
+  h2 { margin-top: 2.3rem; padding-top: .3rem; border-top: 1px solid var(--border); }
+  h3 { margin-top: 1.8rem; }
+  p, li { color: var(--muted); }
+  strong, code { color: var(--text); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .14em; color: var(--accent2); font-weight: 700; font-size: .78rem; }
+  .lede { max-width: 850px; font-size: 1.08rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .card h3 { margin-top: 0; }
+
+  .mermaid {
+    background: #ffffff;
+    color: #111827;
+    border: 1px solid #dbe3f0;
+    border-radius: 14px;
+    padding: 20px;
+    overflow-x: auto;
+    margin: 18px 0 28px;
+    min-height: 92px;
+  }
+  .mermaid svg {
+    display: block;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 auto;
+  }
+  .mermaid svg text,
+  .mermaid svg tspan {
+    fill: #111827 !important;
+  }
+  .mermaid svg .label,
+  .mermaid svg .nodeLabel,
+  .mermaid svg .edgeLabel,
+  .mermaid svg .messageText,
+  .mermaid svg .loopText,
+  .mermaid svg .noteText,
+  .mermaid svg foreignObject,
+  .mermaid svg foreignObject div,
+  .mermaid svg foreignObject span,
+  .mermaid svg foreignObject p {
+    color: #111827 !important;
+  }
+  .mermaid-fallback {
+    white-space: pre-wrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .92rem;
+    line-height: 1.55;
+    color: #111827 !important;
+    background: #f8fafc;
+  }
+  .diagram-status {
+    margin: 14px 0 -6px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    font-size: .88rem;
+  }
+  .diagram-status-error {
+    color: #7f1d1d;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+  pre {
+    background: var(--code);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    overflow-x: auto;
+  }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .92em;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+  th, td { border: 1px solid var(--border); padding: 11px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--panel2); }
+  td { color: var(--muted); }
+  .note {
+    border-left: 4px solid var(--accent2);
+    background: var(--panel);
+    padding: 12px 16px;
+    margin: 18px 0;
+    border-radius: 0 10px 10px 0;
+  }
+  .nav {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .nav a {
+    padding: 7px 11px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--panel);
+  }
+  footer {
+    margin-top: 48px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: .9rem;
+  }
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">CareerVector Engineering Design</div>
+    <h1>Data Pipeline</h1>
+    <p class="lede">Detailed design for transforming O*NET and BLS data into a shared retrieval corpus.</p>
+
+    <div class="nav">
+      <a href="index.html">Design Index</a>
+      <a href="system_architecture.html">System Architecture</a>
+      <a href="data_pipeline.html">Data Pipeline</a>
+      <a href="retrieval_engines.html">Retrieval Engines</a>
+      <a href="ui_request_flow.html">UI & Request Flow</a>
+      <a href="testing_and_evolution.html">Testing & Evolution</a>
+    </div>
+
+  </div>
+</header>
+<main class="wrap">
+
+<section>
+  <h2>1. Source Data</h2>
+  <p>
+    CareerVector uses O*NET as the semantic occupation knowledge base and BLS OEWS data as the wage source.
+    Raw data remains external to Git and is regenerated through <code>scripts/download_data.py</code>.
+  </p>
+  <div class="grid">
+    <div class="card"><h3>O*NET</h3><p>Occupation descriptions, alternate titles, tasks, skills, knowledge, interests, work activities, and software/technology signals.</p></div>
+    <div class="card"><h3>BLS OEWS</h3><p>Occupation wage statistics joined to O*NET records through normalized SOC identifiers.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Data Transformation Pipeline</h2>
+  <div class="mermaid">
+flowchart TD
+    ON["O*NET tables"] --> N["Normalize columns and O*NET-SOC identifiers"]
+    BLS["BLS OEWS"] --> NB["Normalize SOC identifiers + numeric wages"]
+    N --> J["Group child tables by occupation"]
+    J --> W["Build weighted occupation features"]
+    NB --> M["Join wage metadata"]
+    W --> M
+    M --> C["Construct processed occupation row"]
+    C --> OUT[("data/processed/occupations.csv")]
+    OUT --> TF["TF-IDF training"]
+    OUT --> EMB["Sentence embedding build"]
+  </div>
+</section>
+
+<section>
+  <h2>3. Occupation Record</h2>
+  <p>Each processed row acts as the canonical retrieval record. It should preserve both human-readable metadata and model-ready text.</p>
+  <div class="mermaid">
+classDiagram
+  class OccupationRecord {
+    +string onet_soc_code
+    +string title
+    +string description
+    +string alternate_titles
+    +string interests
+    +string skills
+    +string knowledge
+    +string work_activities
+    +string core_tasks
+    +string technologies
+    +float median_wage
+    +float mean_wage
+    +string weighted_document
+    +string semantic_document
+  }
+  </div>
+</section>
+
+<section>
+  <h2>4. Weighted TF-IDF Document</h2>
+  <p>
+    TF-IDF benefits from explicit lexical weighting. Important concepts can be repeated or otherwise emphasized in the
+    document representation so that high-value occupation features contribute more strongly to sparse similarity.
+  </p>
+  <pre><code>occupation: Computer Hardware Engineers
+
+title signals:
+FPGA Engineer
+ASIC Design Engineer
+Embedded Hardware Engineer
+
+high-weight interests:
+engineering engineering engineering
+electronics electronics electronics
+
+high-weight knowledge:
+computers and electronics
+engineering and technology
+
+skills:
+systems analysis
+mathematics
+critical thinking
+
+tasks:
+design new computer hardware
+test computer hardware
+...</code></pre>
+</section>
+
+<section>
+  <h2>5. Semantic Embedding Document</h2>
+  <p>
+    Dense embeddings should receive natural, non-repetitive text. The semantic document therefore preserves the same
+    underlying evidence while presenting it as structured language rather than TF-frequency weighting.
+  </p>
+  <pre><code>Career: Computer Hardware Engineers
+
+Description: Research, design, develop, or test computer equipment...
+
+Related job titles: FPGA Engineer, ASIC Design Engineer,
+Embedded Hardware Engineer...
+
+Interests: Engineering, Electronics...
+Skills: Systems Analysis, Mathematics...
+Knowledge: Computers and Electronics...
+Core tasks: Design new computer hardware...</code></pre>
+</section>
+
+<section>
+  <h2>6. Salary Join</h2>
+  <div class="mermaid">
+flowchart LR
+    O["O*NET-SOC&lt;br/&gt;17-2061.00"] --> X["Normalize"]
+    X --> S["SOC&lt;br/&gt;17-2061"]
+    B["BLS SOC&lt;br/&gt;17-2061"] --> J{"Join"}
+    S --> J
+    J --> W["Median / Mean Wage"]
+  </div>
+  <p>
+    Wage values are metadata and constraints, not semantic text. A salary such as $120,000 should filter or re-rank
+    candidates after relevance scoring instead of becoming a TF-IDF token or embedding phrase.
+  </p>
+</section>
+
+<section>
+  <h2>7. Generated Data Contract</h2>
+  <table>
+    <thead><tr><th>Artifact</th><th>Producer</th><th>Consumer</th></tr></thead>
+    <tbody>
+      <tr><td><code>data/processed/occupations.csv</code></td><td><code>build_dataset.py</code></td><td>Both retrieval training pipelines</td></tr>
+      <tr><td><code>occupation_metadata.csv</code></td><td><code>train_tfidf.py</code></td><td>TF-IDF runtime</td></tr>
+      <tr><td><code>embedding_metadata.csv</code></td><td><code>build_embeddings.py</code></td><td>Embedding runtime</td></tr>
+      <tr><td><code>model_info.json</code></td><td>TF-IDF build</td><td>Version/debug information</td></tr>
+      <tr><td><code>embedding_model_info.json</code></td><td>Embedding build</td><td>Model/version/debug information</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+<footer>
+  <div class="wrap">
+    CareerVector design documentation • TF-IDF + Sentence Embeddings • O*NET + BLS • Streamlit
+  </div>
+</footer>
+</body>
+</html>
