@@ -1,4 +1,4 @@
-.PHONY: install install-ui data build train-tfidf train-embeddings demo-tfidf demo-embeddings ui test all clean
+.PHONY: install install-ui data build train-tfidf train-embeddings demo-tfidf demo-embeddings demo-rag ui test all clean
 
 install:
 	python -m pip install -e .
@@ -29,6 +29,13 @@ demo-embeddings:
 		--interests "embedded systems, hardware engineering, computer architecture" \
 		--preferred-work "low-level programming, digital hardware" \
 		--min-salary 100000 --top-k 8
+
+demo-rag:
+	careervector --method rag --major "Biomedical Physics" \
+		--interests "radiation oncology, medical physics, dosimetry" \
+		--specializations "radiation physics, imaging" \
+		--preferred-work "research, clinical research" \
+		--top-k 5 --llm-model gemma3
 
 ui:
 	streamlit run app.py

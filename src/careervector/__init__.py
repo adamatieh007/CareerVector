@@ -1,3 +1,3 @@
-"""CareerVector: local career recommendation with TF-IDF."""
+"""CareerVector: local career retrieval and evidence-grounded RAG."""
 
-__version__ = "0.1.0"
+__version__ = "0.3.0"

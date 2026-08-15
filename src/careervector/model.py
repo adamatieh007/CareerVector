@@ -157,6 +157,11 @@ class CareerVectorModel:
                     "top_interests": _pipe_list(row.get("top_interests"), 5),
                     "top_skills": _pipe_list(row.get("top_skills"), 5),
                     "top_knowledge": _pipe_list(row.get("top_knowledge"), 5),
+                    "top_activities": _pipe_list(row.get("top_activities"), 5),
+                    "core_tasks": _pipe_list(row.get("core_tasks"), 6),
+                    "software_skills": _pipe_list(row.get("software_skills"), 8),
+                    "p10_salary": _number_or_none(row.get("p10_salary")),
+                    "p90_salary": _number_or_none(row.get("p90_salary")),
                 }
             )
         return results

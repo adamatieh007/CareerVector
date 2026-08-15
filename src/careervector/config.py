@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -19,6 +20,10 @@ EMBEDDING_MATRIX_PATH = ARTIFACT_DIR / "occupation_embeddings.npy"
 EMBEDDING_METADATA_PATH = ARTIFACT_DIR / "embedding_metadata.csv"
 EMBEDDING_INFO_PATH = ARTIFACT_DIR / "embedding_model_info.json"
 DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+
+# Local RAG generator (Ollama)
+DEFAULT_OLLAMA_BASE_URL = os.getenv("CAREERVECTOR_OLLAMA_URL", "http://localhost:11434")
+DEFAULT_OLLAMA_MODEL = os.getenv("CAREERVECTOR_OLLAMA_MODEL", "gemma3")
 
 ONET_RELEASE = "30.3"
 ONET_BASE = "https://www.onetcenter.org/dl_files/database/db_30_3_csv"

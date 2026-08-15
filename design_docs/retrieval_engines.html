@@ -1,18 +1,14 @@
-<!doctype html>
-<html lang="en">
-<head>
-<title>Retrieval Engines | CareerVector</title>
-
+<!doctype html><html lang="en"><head><title>Retrieval Engines | CareerVector</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.16.1/dist/mermaid.min.js"></script>
 <script>
   window.addEventListener('DOMContentLoaded', async () => {
     const blocks = [...document.querySelectorAll('.mermaid')];
-
-    const showFallback = (block, message) => {
-      if (block.dataset.source) return;
-      block.dataset.source = block.textContent.trim();
+    const fallback = (block, message) => {
+      const source = block.dataset.source || block.textContent.trim();
+      block.dataset.source = source;
+      block.textContent = source;
       block.classList.add('mermaid-fallback');
       const note = document.createElement('div');
       note.className = 'diagram-status diagram-status-error';
@@ -21,10 +17,7 @@
     };
 
     if (!window.mermaid) {
-      blocks.forEach((block) => showFallback(
-        block,
-        'Diagram renderer could not load. Mermaid source is shown below so the documentation remains readable.'
-      ));
+      blocks.forEach((block) => fallback(block, 'Mermaid could not load. Diagram source is shown below.'));
       return;
     }
 
@@ -35,380 +28,137 @@
       flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: true },
       sequence: { useMaxWidth: true, wrap: true },
       themeVariables: {
-        background: '#ffffff',
-        primaryColor: '#eef2ff',
-        primaryTextColor: '#111827',
-        primaryBorderColor: '#4f46e5',
-        secondaryColor: '#ecfeff',
-        secondaryTextColor: '#111827',
-        secondaryBorderColor: '#0891b2',
-        tertiaryColor: '#f8fafc',
-        tertiaryTextColor: '#111827',
-        tertiaryBorderColor: '#64748b',
-        lineColor: '#475569',
-        textColor: '#111827',
-        mainBkg: '#ffffff',
-        nodeBorder: '#64748b',
-        clusterBkg: '#f8fafc',
-        clusterBorder: '#cbd5e1',
-        edgeLabelBackground: '#ffffff',
-        actorBkg: '#eef2ff',
-        actorBorder: '#4f46e5',
-        actorTextColor: '#111827',
-        actorLineColor: '#64748b',
-        signalColor: '#334155',
-        signalTextColor: '#111827',
-        labelBoxBkgColor: '#ffffff',
-        labelBoxBorderColor: '#94a3b8',
-        labelTextColor: '#111827',
-        loopTextColor: '#111827',
-        noteBkgColor: '#fff7ed',
-        noteBorderColor: '#f59e0b',
-        noteTextColor: '#111827',
-        activationBkgColor: '#dbeafe',
-        activationBorderColor: '#2563eb',
-        classText: '#111827',
-        fillType0: '#eef2ff',
-        fillType1: '#ecfeff',
-        fillType2: '#f8fafc'
+        background: '#ffffff', primaryColor: '#eef2ff', primaryTextColor: '#111827',
+        primaryBorderColor: '#4f46e5', secondaryColor: '#ecfeff', secondaryTextColor: '#111827',
+        secondaryBorderColor: '#0891b2', tertiaryColor: '#f8fafc', tertiaryTextColor: '#111827',
+        tertiaryBorderColor: '#64748b', lineColor: '#475569', textColor: '#111827',
+        mainBkg: '#ffffff', nodeBorder: '#64748b', clusterBkg: '#f8fafc', clusterBorder: '#cbd5e1',
+        edgeLabelBackground: '#ffffff', actorBkg: '#eef2ff', actorBorder: '#4f46e5',
+        actorTextColor: '#111827', actorLineColor: '#64748b', signalColor: '#334155',
+        signalTextColor: '#111827', labelBoxBkgColor: '#ffffff', labelBoxBorderColor: '#94a3b8',
+        labelTextColor: '#111827', loopTextColor: '#111827', noteBkgColor: '#fff7ed',
+        noteBorderColor: '#f59e0b', noteTextColor: '#111827', activationBkgColor: '#dbeafe',
+        activationBorderColor: '#2563eb', classText: '#111827'
       }
     });
 
-    // Parse every block first. A bad diagram never prevents the remaining diagrams from rendering.
     for (let i = 0; i < blocks.length; i += 1) {
       const block = blocks[i];
       const source = block.textContent.trim();
       block.dataset.source = source;
       try {
         await mermaid.parse(source);
-      } catch (error) {
-        block.textContent = source;
-        block.classList.add('mermaid-fallback');
-        const note = document.createElement('div');
-        note.className = 'diagram-status diagram-status-error';
-        note.textContent = `Mermaid parse error in diagram ${i + 1}: ${error?.message || error}`;
-        block.before(note);
-      }
-    }
-
-    const validBlocks = blocks.filter((block) => !block.classList.contains('mermaid-fallback'));
-    for (let i = 0; i < validBlocks.length; i += 1) {
-      const block = validBlocks[i];
-      try {
         await mermaid.run({ nodes: [block], suppressErrors: false });
       } catch (error) {
-        block.textContent = block.dataset.source || '';
-        block.classList.add('mermaid-fallback');
-        const note = document.createElement('div');
-        note.className = 'diagram-status diagram-status-error';
-        note.textContent = `Diagram render error: ${error?.message || error}`;
-        block.before(note);
+        fallback(block, `Diagram ${i + 1} could not render: ${error?.message || error}`);
       }
     }
-
     document.documentElement.dataset.mermaidReady = 'true';
   });
 </script>
 <style>
-  :root {
-    --bg: #0b1020;
-    --panel: #121a2f;
-    --panel2: #17213b;
-    --text: #edf2ff;
-    --muted: #aab7d6;
-    --accent: #7aa2ff;
-    --accent2: #70e1c3;
-    --border: #2a385f;
-    --code: #0a0f1d;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.65;
-  }
-  header {
-    border-bottom: 1px solid var(--border);
-    background: linear-gradient(135deg, #111a31 0%, #0b1020 65%);
-  }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 38px 28px; }
-  h1 { margin: 0 0 10px; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.05; }
-  h2 { margin-top: 2.3rem; padding-top: .3rem; border-top: 1px solid var(--border); }
-  h3 { margin-top: 1.8rem; }
-  p, li { color: var(--muted); }
-  strong, code { color: var(--text); }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .eyebrow { text-transform: uppercase; letter-spacing: .14em; color: var(--accent2); font-weight: 700; font-size: .78rem; }
-  .lede { max-width: 850px; font-size: 1.08rem; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 20px;
-  }
-  .card h3 { margin-top: 0; }
-
-  .mermaid {
-    background: #ffffff;
-    color: #111827;
-    border: 1px solid #dbe3f0;
-    border-radius: 14px;
-    padding: 20px;
-    overflow-x: auto;
-    margin: 18px 0 28px;
-    min-height: 92px;
-  }
-  .mermaid svg {
-    display: block;
-    max-width: 100% !important;
-    height: auto !important;
-    margin: 0 auto;
-  }
-  .mermaid svg text,
-  .mermaid svg tspan {
-    fill: #111827 !important;
-  }
-  .mermaid svg .label,
-  .mermaid svg .nodeLabel,
-  .mermaid svg .edgeLabel,
-  .mermaid svg .messageText,
-  .mermaid svg .loopText,
-  .mermaid svg .noteText,
-  .mermaid svg foreignObject,
-  .mermaid svg foreignObject div,
-  .mermaid svg foreignObject span,
-  .mermaid svg foreignObject p {
-    color: #111827 !important;
-  }
-  .mermaid-fallback {
-    white-space: pre-wrap;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: .92rem;
-    line-height: 1.55;
-    color: #111827 !important;
-    background: #f8fafc;
-  }
-  .diagram-status {
-    margin: 14px 0 -6px;
-    padding: 10px 12px;
-    border-radius: 9px;
-    font-size: .88rem;
-  }
-  .diagram-status-error {
-    color: #7f1d1d;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-  }
-  pre {
-    background: var(--code);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    overflow-x: auto;
-  }
-  code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: .92em;
-  }
-  table { width: 100%; border-collapse: collapse; margin: 18px 0; }
-  th, td { border: 1px solid var(--border); padding: 11px 12px; text-align: left; vertical-align: top; }
-  th { background: var(--panel2); }
-  td { color: var(--muted); }
-  .note {
-    border-left: 4px solid var(--accent2);
-    background: var(--panel);
-    padding: 12px 16px;
-    margin: 18px 0;
-    border-radius: 0 10px 10px 0;
-  }
-  .nav {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 18px;
-  }
-  .nav a {
-    padding: 7px 11px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: var(--panel);
-  }
-  footer {
-    margin-top: 48px;
-    border-top: 1px solid var(--border);
-    color: var(--muted);
-    font-size: .9rem;
-  }
+:root { --bg:#0b1020; --panel:#121a2f; --panel2:#17213b; --text:#edf2ff; --muted:#b8c4df; --accent:#8bb0ff; --accent2:#70e1c3; --border:#2a385f; --code:#080d18; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }
+header { border-bottom:1px solid var(--border); background:linear-gradient(135deg,#111a31 0%,#0b1020 65%); }
+.wrap { max-width:1180px; margin:0 auto; padding:38px 28px; }
+h1 { margin:0 0 10px; font-size:clamp(2rem,5vw,3.4rem); line-height:1.05; }
+h2 { margin-top:2.3rem; padding-top:.3rem; border-top:1px solid var(--border); }
+h3 { margin-top:1.8rem; }
+p,li { color:var(--muted); } strong,code { color:var(--text); }
+a { color:var(--accent); text-decoration:none; } a:hover{text-decoration:underline;}
+.eyebrow { text-transform:uppercase; letter-spacing:.14em; color:var(--accent2); font-weight:700; font-size:.78rem; }
+.lede { max-width:900px; font-size:1.08rem; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+.card { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
+.card h3 { margin-top:0; }
+.mermaid { background:#fff; color:#111827; border:1px solid #dbe3f0; border-radius:14px; padding:20px; overflow-x:auto; margin:18px 0 28px; min-height:92px; }
+.mermaid svg { display:block; max-width:100%!important; height:auto!important; margin:0 auto; }
+.mermaid svg text,.mermaid svg tspan { fill:#111827!important; }
+.mermaid svg .label,.mermaid svg .nodeLabel,.mermaid svg .edgeLabel,.mermaid svg .messageText,.mermaid svg .loopText,.mermaid svg .noteText,.mermaid svg foreignObject,.mermaid svg foreignObject div,.mermaid svg foreignObject span,.mermaid svg foreignObject p { color:#111827!important; }
+.mermaid-fallback { white-space:pre-wrap; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92rem; line-height:1.55; color:#111827!important; background:#f8fafc; }
+.diagram-status { margin:14px 0 -6px; padding:10px 12px; border-radius:9px; font-size:.88rem; }
+.diagram-status-error { color:#7f1d1d; background:#fef2f2; border:1px solid #fecaca; }
+pre { background:var(--code); border:1px solid var(--border); border-radius:10px; padding:16px; overflow-x:auto; }
+code { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+table { width:100%; border-collapse:collapse; margin:18px 0; } th,td{border:1px solid var(--border);padding:11px 12px;text-align:left;vertical-align:top;} th{background:var(--panel2);} td{color:var(--muted);}
+.note { border-left:4px solid var(--accent2); background:var(--panel); padding:12px 16px; margin:18px 0; border-radius:0 10px 10px 0; }
+.nav { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }.nav a{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:var(--panel);}
+.badge { display:inline-block; padding:.12rem .48rem; border:1px solid var(--border); border-radius:999px; color:var(--accent2); font-size:.8rem; }
+footer { margin-top:48px; border-top:1px solid var(--border); color:var(--muted); font-size:.9rem; }
 </style>
-
 </head>
-<body>
-<header>
-  <div class="wrap">
-    <div class="eyebrow">CareerVector Engineering Design</div>
-    <h1>Retrieval Engines</h1>
-    <p class="lede">TF-IDF and sentence-embedding architecture, scoring, query construction, and future hybrid retrieval.</p>
-
-    <div class="nav">
-      <a href="index.html">Design Index</a>
-      <a href="system_architecture.html">System Architecture</a>
-      <a href="data_pipeline.html">Data Pipeline</a>
-      <a href="retrieval_engines.html">Retrieval Engines</a>
-      <a href="ui_request_flow.html">UI & Request Flow</a>
-      <a href="testing_and_evolution.html">Testing & Evolution</a>
-    </div>
-
-  </div>
-</header>
+<body><header><div class="wrap"><div class="eyebrow">CareerVector Engineering Design · v0.3</div><h1>Retrieval Engines</h1><p class="lede">TF-IDF and sentence-embedding ranking, shared constraints, and the retrieval contract consumed by RAG.</p><div class="nav">
+<a href="index.html">Design Index</a>
+<a href="system_architecture.html">System Architecture</a>
+<a href="data_pipeline.html">Data Pipeline</a>
+<a href="retrieval_engines.html">Retrieval Engines</a>
+<a href="rag_workflow.html">RAG Workflow</a>
+<a href="ui_request_flow.html">UI & Request Flow</a>
+<a href="testing_and_evolution.html">Testing & Evolution</a>
+</div></div></header>
 <main class="wrap">
-
-<section>
-  <h2>1. Shared Retrieval Contract</h2>
-  <p>
-    Both retrieval methods consume the same <code>CareerProfile</code> and return ranked occupation records with scores and
-    metadata. This allows the UI and evaluation code to switch engines without changing the rest of the application.
-  </p>
-  <div class="mermaid">
+<section><h2>1. Shared Retrieval Contract</h2><p>TF-IDF and sentence embeddings return the same general recommendation shape. RAG consumes the embedding results rather than implementing a third independent ranking algorithm.</p><div class="mermaid">
 flowchart LR
-    P["CareerProfile"] --> A{"Retriever"}
-    A -->|tfidf| T["TFIDFModel"]
-    A -->|embeddings| E["EmbeddingModel"]
-    T --> R["Recommendation[]"]
+    P[CareerProfile] --> S{Retriever}
+    S -->|TF-IDF| T[TFIDF model]
+    S -->|Embeddings| E[Embedding model]
+    T --> R[Recommendation list]
     E --> R
-    R --> UI["UI / CLI / Evaluation"]
-  </div>
-</section>
-
-<section>
-  <h2>2. TF-IDF Engine</h2>
-  <div class="mermaid">
+    R --> UI[Direct UI]
+    R --> C[RAG context builder]
+</div></section>
+<section><h2>2. TF-IDF Engine</h2><div class="mermaid">
 flowchart TD
-    P["Structured profile"] --> Q["Weighted lexical query"]
-    Q --> V["Saved TF-IDF vectorizer"]
-    V --> QV["Sparse query vector"]
-    DOC[("Occupation TF-IDF matrix")] --> CS["Cosine similarity"]
+    P[Structured profile] --> Q[Weighted lexical query]
+    Q --> V[Saved vectorizer]
+    V --> QV[Sparse query vector]
+    MAT[(Occupation TF-IDF matrix)] --> CS[Cosine similarity]
     QV --> CS
-    CS --> POS["Positive relevance score"]
-
-    A["Avoid preferences"] --> AV["TF-IDF avoid vector"]
-    AV --> ACS["Avoid similarity"]
-    DOC --> ACS
-    ACS --> PEN["Penalty"]
-    POS --> FINAL["final score"]
-    PEN --> FINAL
-  </div>
-  <p>
-    TF-IDF is a lexical baseline: it excels when profile wording overlaps the occupation corpus directly. Repetition or
-    weighting in the generated query is intentional because term frequency contributes to the representation.
-  </p>
-</section>
-
-<section>
-  <h2>3. Sentence Embedding Engine</h2>
-  <div class="mermaid">
+    A[Avoid query] --> AV[Avoid sparse vector]
+    AV --> AS[Avoid similarity]
+    MAT --> AS
+    CS --> F[Final relevance]
+    AS --> F
+    F --> C[Salary constraint]
+    C --> K[Top K]
+</div></section>
+<section><h2>3. Sentence Embedding Engine</h2><div class="mermaid">
 flowchart TD
-    P["Structured profile"] --> NL["Natural-language profile"]
-    NL --> M["SentenceTransformer"]
-    M --> Q["Normalized dense query vector"]
-    D[("Precomputed occupation embeddings")] --> S["Dense cosine similarity"]
+    P[Structured profile] --> N[Natural semantic query]
+    N --> M[SentenceTransformer]
+    M --> Q[Normalized query vector]
+    D[(Precomputed occupation vectors)] --> S[Dot product cosine]
     Q --> S
-    S --> POS["Positive semantic relevance"]
-
-    A["Avoid preferences"] --> ANL["Natural-language avoid query"]
-    ANL --> M2["SentenceTransformer"]
-    M2 --> AQ["Avoid vector"]
-    AQ --> AS["Semantic avoid similarity"]
+    A[Avoid concepts] --> AQ[Semantic avoid vector]
+    AQ --> AS[Avoid similarity]
     D --> AS
-    AS --> PEN["Penalty"]
-    POS --> FINAL["final score"]
-    PEN --> FINAL
-  </div>
-  <p>
-    The embedding model uses semantic proximity rather than exact token overlap. A phrase such as “radiation treatment
-    planning” can therefore retrieve related occupations even if an occupation description uses different wording.
-  </p>
-</section>
-
-<section>
-  <h2>4. Scoring Pipeline</h2>
-  <div class="mermaid">
+    S --> F[Final relevance]
+    AS --> F
+    F --> C[Salary constraint]
+    C --> K[Top K]
+</div></section>
+<section><h2>4. Why RAG Uses Embedding Retrieval</h2><p>The current RAG mode uses sentence embeddings because the generator benefits from semantically relevant evidence even when user wording differs from O*NET wording. TF-IDF is still retained as an interpretable baseline and future hybrid signal.</p></section>
+<section><h2>5. Shared Scoring Rule</h2><pre><code>final_score = positive_similarity - avoid_weight * avoid_similarity</code></pre><p>Salary filtering is applied as a hard constraint. RAG does not change this ranking rule; it explains the surviving retrieved evidence.</p></section>
+<section><h2>6. Retrieval versus Generation</h2><div class="mermaid">
 flowchart LR
-    R["Raw relevance"] --> AP["Avoid penalty"]
-    AP --> C["Constraint checks"]
-    C --> S["Sort descending"]
-    S --> K["Top-K results"]
-    K --> X["Explanation metadata"]
-  </div>
-  <p>The current conceptual scoring rule is:</p>
-  <pre><code>final_score = positive_similarity - avoid_weight * avoid_similarity</code></pre>
-  <p>
-    Salary is then applied as a hard constraint when requested. This separation keeps semantic relevance and structured
-    business rules distinct.
-  </p>
-</section>
-
-<section>
-  <h2>5. Query Construction Differences</h2>
-  <table>
-    <thead><tr><th>Concern</th><th>TF-IDF</th><th>Sentence Embeddings</th></tr></thead>
-    <tbody>
-      <tr><td>Primary signal</td><td>Token overlap and inverse document frequency</td><td>Semantic similarity in dense vector space</td></tr>
-      <tr><td>Profile representation</td><td>Weighted/repeated lexical terms</td><td>Natural-language structured description</td></tr>
-      <tr><td>Occupation representation</td><td>Weighted document</td><td>Semantic document, optionally chunked</td></tr>
-      <tr><td>Interpretability</td><td>Strong: matched TF-IDF terms</td><td>Moderate: metadata + semantic score</td></tr>
-      <tr><td>Failure mode</td><td>Vocabulary mismatch</td><td>Semantic over-generalization</td></tr>
-      <tr><td>Runtime cost</td><td>Very low</td><td>Higher due to query encoding, still small at ~1K occupations</td></tr>
-    </tbody>
-  </table>
-</section>
-
-<section>
-  <h2>6. Embedding Build Strategy</h2>
-  <div class="mermaid">
-flowchart TD
-    O["Semantic occupation document"] --> L{"Long document?"}
-    L -->|No| E["Encode document"]
-    L -->|Yes| C["Split into overlapping chunks"]
-    C --> CE["Encode each chunk"]
-    CE --> AVG["Mean-pool chunk embeddings"]
-    E --> N["L2 normalize"]
-    AVG --> N
-    N --> STORE[("occupation_embeddings.npy")]
-  </div>
-  <p>
-    Chunking prevents long O*NET records from being silently truncated in a way that overweights the beginning of an
-    occupation record.
-  </p>
-</section>
-
-<section>
-  <h2>7. Future Hybrid Retriever</h2>
-  <div class="mermaid">
+    Q[User profile] --> RET[Retrieval]
+    RET --> TOP[Top K occupations]
+    TOP --> DIRECT[Direct recommendation view]
+    TOP --> GEN[Generation context]
+    GEN --> LLM[Local LLM]
+    LLM --> EX[Explanation]
+</div><div class="note">The LLM is not the ranker. This separation is central to the design and to evaluation.</div></section>
+<section><h2>7. Future Hybrid Retriever</h2><div class="mermaid">
 flowchart LR
-    Q["User profile"] --> TF["TF-IDF score"]
-    Q --> EM["Embedding score"]
-    TF --> N1["Normalize"]
-    EM --> N2["Normalize"]
-    N1 --> H["Weighted fusion"]
-    N2 --> H
-    H --> F["Constraints"]
-    F --> R["Hybrid ranking"]
-  </div>
-  <p>
-    A later version can fuse lexical and semantic evidence. This is preferable to immediately deleting the TF-IDF baseline,
-    because specific terms such as <code>FPGA</code>, <code>dosimetry</code>, or <code>CUDA</code> can be valuable exact-match signals.
-  </p>
-</section>
-
-</main>
-<footer>
-  <div class="wrap">
-    CareerVector design documentation • TF-IDF + Sentence Embeddings • O*NET + BLS • Streamlit
-  </div>
-</footer>
-</body>
-</html>
+    Q[Profile] --> T[TF-IDF score]
+    Q --> E[Embedding score]
+    T --> NT[Normalize]
+    E --> NE[Normalize]
+    NT --> H[Weighted fusion]
+    NE --> H
+    H --> C[Constraints]
+    C --> R[Hybrid top K]
+    R --> G[RAG context]
+</div></section>
+</main><footer><div class="wrap">CareerVector v0.3 design documentation · TF-IDF · Sentence Embeddings · Local Ollama RAG</div></footer></body></html>
