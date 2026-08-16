@@ -1,50 +1,28 @@
-.PHONY: install install-ui data build train-tfidf train-embeddings demo-tfidf demo-embeddings demo-rag ui test all clean
+.PHONY: install data build-data tfidf embeddings evaluate test app all
 
 install:
-	python -m pip install -e .
-
-install-ui:
 	python -m pip install -e ".[ui,dev]"
 
 data:
 	python scripts/download_data.py
 
-build:
+build-data:
 	python scripts/build_dataset.py
 
-train-tfidf:
+tfidf:
 	python scripts/train_tfidf.py
 
-train-embeddings:
+embeddings:
 	python scripts/build_embeddings.py
 
-demo-tfidf:
-	careervector --method tfidf --major "Computer Engineering" \
-		--interests "embedded systems, hardware engineering, computer architecture" \
-		--preferred-work "low-level programming, digital hardware" \
-		--min-salary 100000 --top-k 8
-
-demo-embeddings:
-	careervector --method embeddings --major "Computer Engineering" \
-		--interests "embedded systems, hardware engineering, computer architecture" \
-		--preferred-work "low-level programming, digital hardware" \
-		--min-salary 100000 --top-k 8
-
-demo-rag:
-	careervector --method rag --major "Biomedical Physics" \
-		--interests "radiation oncology, medical physics, dosimetry" \
-		--specializations "radiation physics, imaging" \
-		--preferred-work "research, clinical research" \
-		--top-k 5 --llm-model gemma3
-
-ui:
-	streamlit run app.py
+evaluate:
+	python scripts/evaluate.py --method tfidf
+	python scripts/evaluate.py --method embeddings
 
 test:
 	python -m pytest -q
 
-all: data build train-tfidf train-embeddings
+app:
+	streamlit run app.py
 
-clean:
-	rm -rf data/processed/* artifacts/*
-	touch data/processed/.gitkeep artifacts/.gitkeep
+all: build-data tfidf embeddings test

@@ -15,134 +15,80 @@
       note.textContent = message;
       block.before(note);
     };
-
     if (!window.mermaid) {
       blocks.forEach((block) => fallback(block, 'Mermaid could not load. Diagram source is shown below.'));
       return;
     }
-
     mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: 'loose',
-      theme: 'base',
-      flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: true },
-      sequence: { useMaxWidth: true, wrap: true },
-      themeVariables: {
-        background: '#ffffff', primaryColor: '#eef2ff', primaryTextColor: '#111827',
-        primaryBorderColor: '#4f46e5', secondaryColor: '#ecfeff', secondaryTextColor: '#111827',
-        secondaryBorderColor: '#0891b2', tertiaryColor: '#f8fafc', tertiaryTextColor: '#111827',
-        tertiaryBorderColor: '#64748b', lineColor: '#475569', textColor: '#111827',
-        mainBkg: '#ffffff', nodeBorder: '#64748b', clusterBkg: '#f8fafc', clusterBorder: '#cbd5e1',
-        edgeLabelBackground: '#ffffff', actorBkg: '#eef2ff', actorBorder: '#4f46e5',
-        actorTextColor: '#111827', actorLineColor: '#64748b', signalColor: '#334155',
-        signalTextColor: '#111827', labelBoxBkgColor: '#ffffff', labelBoxBorderColor: '#94a3b8',
-        labelTextColor: '#111827', loopTextColor: '#111827', noteBkgColor: '#fff7ed',
-        noteBorderColor: '#f59e0b', noteTextColor: '#111827', activationBkgColor: '#dbeafe',
-        activationBorderColor: '#2563eb', classText: '#111827'
+      startOnLoad:false, securityLevel:'loose', theme:'base',
+      flowchart:{curve:'basis',htmlLabels:true,useMaxWidth:true},
+      sequence:{useMaxWidth:true,wrap:true},
+      themeVariables:{
+        background:'#ffffff', primaryColor:'#eef2ff', primaryTextColor:'#111827', primaryBorderColor:'#4f46e5',
+        secondaryColor:'#ecfeff', secondaryTextColor:'#111827', secondaryBorderColor:'#0891b2',
+        tertiaryColor:'#f8fafc', tertiaryTextColor:'#111827', tertiaryBorderColor:'#64748b', lineColor:'#475569',
+        textColor:'#111827', mainBkg:'#ffffff', nodeBorder:'#64748b', clusterBkg:'#f8fafc', clusterBorder:'#cbd5e1',
+        edgeLabelBackground:'#ffffff', actorBkg:'#eef2ff', actorBorder:'#4f46e5', actorTextColor:'#111827',
+        actorLineColor:'#64748b', signalColor:'#334155', signalTextColor:'#111827', labelBoxBkgColor:'#ffffff',
+        labelBoxBorderColor:'#94a3b8', labelTextColor:'#111827', loopTextColor:'#111827', noteBkgColor:'#fff7ed',
+        noteBorderColor:'#f59e0b', noteTextColor:'#111827', activationBkgColor:'#dbeafe', activationBorderColor:'#2563eb',
+        classText:'#111827'
       }
     });
-
-    for (let i = 0; i < blocks.length; i += 1) {
-      const block = blocks[i];
-      const source = block.textContent.trim();
-      block.dataset.source = source;
-      try {
-        await mermaid.parse(source);
-        await mermaid.run({ nodes: [block], suppressErrors: false });
-      } catch (error) {
-        fallback(block, `Diagram ${i + 1} could not render: ${error?.message || error}`);
-      }
+    for (let i=0;i<blocks.length;i+=1) {
+      const block=blocks[i]; const source=block.textContent.trim(); block.dataset.source=source;
+      try { await mermaid.parse(source); await mermaid.run({nodes:[block],suppressErrors:false}); }
+      catch(error){ fallback(block, `Diagram ${i+1} could not render: ${error?.message || error}`); }
     }
-    document.documentElement.dataset.mermaidReady = 'true';
+    document.documentElement.dataset.mermaidReady='true';
   });
 </script>
 <style>
-:root { --bg:#0b1020; --panel:#121a2f; --panel2:#17213b; --text:#edf2ff; --muted:#b8c4df; --accent:#8bb0ff; --accent2:#70e1c3; --border:#2a385f; --code:#080d18; }
-* { box-sizing:border-box; }
-body { margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }
-header { border-bottom:1px solid var(--border); background:linear-gradient(135deg,#111a31 0%,#0b1020 65%); }
-.wrap { max-width:1180px; margin:0 auto; padding:38px 28px; }
-h1 { margin:0 0 10px; font-size:clamp(2rem,5vw,3.4rem); line-height:1.05; }
-h2 { margin-top:2.3rem; padding-top:.3rem; border-top:1px solid var(--border); }
-h3 { margin-top:1.8rem; }
-p,li { color:var(--muted); } strong,code { color:var(--text); }
-a { color:var(--accent); text-decoration:none; } a:hover{text-decoration:underline;}
-.eyebrow { text-transform:uppercase; letter-spacing:.14em; color:var(--accent2); font-weight:700; font-size:.78rem; }
-.lede { max-width:900px; font-size:1.08rem; }
-.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
-.card { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
-.card h3 { margin-top:0; }
-.mermaid { background:#fff; color:#111827; border:1px solid #dbe3f0; border-radius:14px; padding:20px; overflow-x:auto; margin:18px 0 28px; min-height:92px; }
-.mermaid svg { display:block; max-width:100%!important; height:auto!important; margin:0 auto; }
-.mermaid svg text,.mermaid svg tspan { fill:#111827!important; }
-.mermaid svg .label,.mermaid svg .nodeLabel,.mermaid svg .edgeLabel,.mermaid svg .messageText,.mermaid svg .loopText,.mermaid svg .noteText,.mermaid svg foreignObject,.mermaid svg foreignObject div,.mermaid svg foreignObject span,.mermaid svg foreignObject p { color:#111827!important; }
-.mermaid-fallback { white-space:pre-wrap; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92rem; line-height:1.55; color:#111827!important; background:#f8fafc; }
-.diagram-status { margin:14px 0 -6px; padding:10px 12px; border-radius:9px; font-size:.88rem; }
-.diagram-status-error { color:#7f1d1d; background:#fef2f2; border:1px solid #fecaca; }
-pre { background:var(--code); border:1px solid var(--border); border-radius:10px; padding:16px; overflow-x:auto; }
-code { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
-table { width:100%; border-collapse:collapse; margin:18px 0; } th,td{border:1px solid var(--border);padding:11px 12px;text-align:left;vertical-align:top;} th{background:var(--panel2);} td{color:var(--muted);}
-.note { border-left:4px solid var(--accent2); background:var(--panel); padding:12px 16px; margin:18px 0; border-radius:0 10px 10px 0; }
-.nav { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }.nav a{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:var(--panel);}
-.badge { display:inline-block; padding:.12rem .48rem; border:1px solid var(--border); border-radius:999px; color:var(--accent2); font-size:.8rem; }
-footer { margin-top:48px; border-top:1px solid var(--border); color:var(--muted); font-size:.9rem; }
+:root{--bg:#0b1020;--panel:#121a2f;--panel2:#17213b;--text:#edf2ff;--muted:#b8c4df;--accent:#8bb0ff;--accent2:#70e1c3;--border:#2a385f;--code:#080d18}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.65}header{border-bottom:1px solid var(--border);background:linear-gradient(135deg,#111a31 0%,#0b1020 65%)}.wrap{max-width:1180px;margin:0 auto;padding:38px 28px}h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05}h2{margin-top:2.3rem;padding-top:.3rem;border-top:1px solid var(--border)}h3{margin-top:1.8rem}p,li{color:var(--muted)}strong,code{color:var(--text)}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.eyebrow{text-transform:uppercase;letter-spacing:.14em;color:var(--accent2);font-weight:700;font-size:.78rem}.lede{max-width:920px;font-size:1.08rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px}.card h3{margin-top:0}.mermaid{background:#fff;color:#111827;border:1px solid #dbe3f0;border-radius:14px;padding:20px;overflow-x:auto;margin:18px 0 28px;min-height:92px}.mermaid svg{display:block;max-width:100%!important;height:auto!important;margin:0 auto}.mermaid svg text,.mermaid svg tspan{fill:#111827!important}.mermaid svg .label,.mermaid svg .nodeLabel,.mermaid svg .edgeLabel,.mermaid svg .messageText,.mermaid svg .loopText,.mermaid svg .noteText,.mermaid svg foreignObject,.mermaid svg foreignObject div,.mermaid svg foreignObject span,.mermaid svg foreignObject p{color:#111827!important}.mermaid-fallback{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;line-height:1.55;color:#111827!important;background:#f8fafc}.diagram-status{margin:14px 0 -6px;padding:10px 12px;border-radius:9px;font-size:.88rem}.diagram-status-error{color:#7f1d1d;background:#fef2f2;border:1px solid #fecaca}pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em}table{width:100%;border-collapse:collapse;margin:18px 0}th,td{border:1px solid var(--border);padding:11px 12px;text-align:left;vertical-align:top}th{background:var(--panel2)}td{color:var(--muted)}.note{border-left:4px solid var(--accent2);background:var(--panel);padding:12px 16px;margin:18px 0;border-radius:0 10px 10px 0}.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.nav a{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:var(--panel)}.badge{display:inline-block;padding:.12rem .48rem;border:1px solid var(--border);border-radius:999px;color:var(--accent2);font-size:.8rem}footer{margin-top:48px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
 </style>
-</head>
-<body><header><div class="wrap"><div class="eyebrow">CareerVector Engineering Design · v0.3</div><h1>Testing &amp; Evolution</h1><p class="lede">Retrieval metrics, mocked RAG boundaries, future grounding evaluation, failure analysis, and roadmap.</p><div class="nav">
-<a href="index.html">Design Index</a>
-<a href="system_architecture.html">System Architecture</a>
-<a href="data_pipeline.html">Data Pipeline</a>
-<a href="retrieval_engines.html">Retrieval Engines</a>
-<a href="rag_workflow.html">RAG Workflow</a>
-<a href="ui_request_flow.html">UI & Request Flow</a>
-<a href="testing_and_evolution.html">Testing & Evolution</a>
-</div></div></header>
-<main class="wrap">
-<section><h2>1. Test Layers</h2><div class="mermaid">
+</head><body><header><div class="wrap"><div class="eyebrow">CareerVector Engineering Design · v0.4</div><h1>Testing &amp; Evolution</h1><p class="lede">Verification of data adapters, structured ranking, retrieval quality, RAG grounding, and future improvements.</p><div class="nav">
+<a href="index.html">Design Index</a><a href="system_architecture.html">System Architecture</a><a href="career_knowledge_base.html">Career Knowledge Base</a><a href="data_pipeline.html">Data Pipeline</a><a href="retrieval_engines.html">Retrieval & Ranking</a><a href="rag_workflow.html">RAG Workflow</a><a href="ui_request_flow.html">UI & Request Flow</a><a href="testing_and_evolution.html">Testing & Evolution</a>
+</div></div></header><main class="wrap">
+<section><h2>Testing Pyramid</h2><div class="mermaid">
 flowchart TB
-    UI[UI smoke and syntax checks]
-    INT[Service integration tests with fakes]
-    UNIT[Unit tests profile text scoring context Ollama client]
-    UNIT --> INT
-    INT --> UI
+ E2E[UI and local smoke tests]
+ INT[Pipeline and retriever integration]
+ UNIT[Unit tests]
+ UNIT --> INT
+ INT --> E2E
 </div></section>
-<section><h2>2. Current RAG Tests</h2><table><thead><tr><th>Boundary</th><th>What is verified</th></tr></thead><tbody><tr><td>Context builder</td><td><code>[CV#]</code> source IDs, wage formatting, evidence inclusion, and removal of missing <code>nan</code> values.</td></tr><tr><td>Ollama client</td><td>Model discovery, non-streaming chat payload, connection-error mapping, and missing-model errors.</td></tr><tr><td>RAG service</td><td>Retrieval occurs before generation, retrieved evidence enters the prompt, and generation is skipped when no source survives constraints.</td></tr><tr><td>CLI parser</td><td><code>--method rag</code>, generator model, and Ollama URL options.</td></tr><tr><td>Existing retrieval tests</td><td>TF-IDF ranking, embedding ranking, profile construction, text helpers, and vector normalization.</td></tr></tbody></table></section>
-<section><h2>3. Retrieval Evaluation Remains Separate</h2><div class="mermaid">
+<section><h2>v0.4 Unit Coverage</h2><table><tr><th>Area</th><th>Checks</th></tr><tr><td>Academic matching</td><td>Matching CIP program names score above unrelated fields.</td></tr><tr><td>NCES adapter</td><td>CIP-SOC workbook columns normalize to SOC keys and major lists.</td></tr><tr><td>BLS projections</td><td>Growth, openings, wage, and education fields parse from Table 1.2.</td></tr><tr><td>ESCO optional importer</td><td>Official-style occupation CSVs produce role records without breaking the U.S. build.</td></tr><tr><td>Specific-title signal</td><td>Explicit concepts such as FPGA reward the corresponding role title.</td></tr><tr><td>Diversity pass</td><td>One parent occupation cannot flood every Top-K position.</td></tr><tr><td>RAG context</td><td>New academic/outlook evidence is included and citation IDs stay stable.</td></tr></table></section>
+<section><h2>Retrieval Evaluation</h2><div class="mermaid">
 flowchart LR
-    P[(evaluation profiles)] --> T[TF-IDF]
-    P --> E[Embeddings]
-    T --> M1[Recall at K MRR NDCG]
-    E --> M2[Recall at K MRR NDCG]
-    M1 --> C[Compare retrieval]
-    M2 --> C
-</div><p>RAG does not replace these metrics because the generator does not determine which careers are retrieved.</p></section>
-<section><h2>4. Future RAG Evaluation</h2><div class="mermaid">
-flowchart LR
-    OUT[Generated answer] --> C1[Citation coverage]
-    OUT --> C2[Citation correctness]
-    OUT --> C3[Unsupported claim rate]
-    OUT --> C4[Evidence completeness]
-    OUT --> C5[Latency]
+ P[(Evaluation profiles)] --> T[TF-IDF hybrid]
+ P --> E[Embedding hybrid]
+ T --> M[Recall at K, MRR, NDCG]
+ E --> M
+ M --> F[Failure analysis by major and domain]
 </div></section>
-<section><h2>5. Failure Analysis</h2><div class="mermaid">
+<section><h2>Failure Analysis</h2><div class="mermaid">
 flowchart TD
-    BAD[Bad RAG answer] --> Q{Where did failure originate}
-    Q --> RET[Retrieval failure]
-    Q --> CTX[Context projection omitted evidence]
-    Q --> GEN[Generator ignored evidence]
-    Q --> DATA[Source dataset limitation]
-    RET --> FIX1[Tune or hybridize retrieval]
-    CTX --> FIX2[Improve evidence projection]
-    GEN --> FIX3[Prompt or model evaluation]
-    DATA --> FIX4[Improve data coverage]
+ B[Bad recommendation] --> C{Likely cause}
+ C --> D[Missing or noisy role data]
+ C --> A[Academic crosswalk too broad]
+ C --> T[Title alias noise]
+ C --> S[Semantic over-generalization]
+ C --> W[Missing wage or outlook]
+ C --> R[RAG explanation issue]
+ D --> X[Improve corpus adapter]
+ A --> X2[Tune academic prior]
+ T --> X3[Alias filtering and diversity]
+ S --> X4[Hybrid retrieval tuning]
+ W --> X5[Coverage audit]
+ R --> X6[Prompt and citation evaluation]
 </div></section>
-<section><h2>6. Roadmap</h2><div class="mermaid">
+<section><h2>Roadmap</h2><div class="mermaid">
 flowchart LR
-    V1[V1 TF-IDF] --> V2[V2 Sentence Embeddings]
-    V2 --> V3[V3 Local RAG]
-    V3 --> V4[V4 Hybrid retrieval]
-    V4 --> V5[V5 Automated grounding evaluation]
-    V5 --> V6[V6 Feedback reranking and location-aware wages]
+ V1[TF-IDF occupation baseline] --> V2[Sentence embeddings and UI]
+ V2 --> V3[Local Ollama RAG]
+ V3 --> V4[Multi-source role knowledge base]
+ V4 --> V5[Learned ranking and user feedback]
+ V5 --> V6[Location-aware labor market and richer crosswalks]
 </div></section>
-<section><h2>7. Release Checklist</h2><ul><li>Run <code>python -m pytest -q</code>.</li><li>Compile Python modules.</li><li>Validate every Mermaid diagram and local design-doc link.</li><li>Verify raw data, model artifacts, <code>.venv</code>, and <code>.git</code> are not included in release ZIPs.</li><li>Manually smoke-test RAG against a running local Ollama model before a tagged release.</li></ul></section>
-</main><footer><div class="wrap">CareerVector v0.3 design documentation · TF-IDF · Sentence Embeddings · Local Ollama RAG</div></footer></body></html>
+</main><footer><div class="wrap">CareerVector v0.4 · Multi-source knowledge base · Hybrid ranking · Local Ollama RAG</div></footer></body></html>

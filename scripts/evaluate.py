@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from careervector.embedding_model import EmbeddingCareerVectorModel  # noqa: E402
 from careervector.model import CareerVectorModel  # noqa: E402
 from careervector.profile import CareerProfile  # noqa: E402
+from careervector.text import normalize_soc  # noqa: E402
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -32,18 +33,22 @@ def main() -> None:
     for case in examples:
         profile = CareerProfile(
             major=case.get("major", ""),
+            concentration=case.get("concentration", ""),
             interests=case.get("interests", []),
             specializations=case.get("specializations", []),
+            skills=case.get("skills", []),
             preferred_work=case.get("preferred_work", []),
         )
         results = model.recommend(profile, top_k=5)
-        returned = {str(r["onet_soc_code"]) for r in results}
-        expected = set(case["expected_onet_codes"])
+        returned_raw = {str(r["onet_soc_code"]) for r in results}
+        expected_raw = set(case["expected_onet_codes"])
+        returned = {normalize_soc(code) for code in returned_raw}
+        expected = {normalize_soc(code) for code in expected_raw}
         hit = bool(returned & expected)
         hits += int(hit)
         print(f"{'PASS' if hit else 'MISS'}: {case['name']}")
         print("  returned:", [r["onet_soc_code"] for r in results])
-        print("  expected one of:", sorted(expected))
+        print("  expected one of:", sorted(expected_raw))
 
     total = len(examples)
     print(f"\n{args.method} Recall@5 cases: {hits}/{total} = {hits / total:.1%}")

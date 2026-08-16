@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><title>Data Pipeline | CareerVector</title>
+<!doctype html><html lang="en"><head><title>Career Knowledge Base | CareerVector</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.16.1/dist/mermaid.min.js"></script>
@@ -47,43 +47,66 @@
 :root{--bg:#0b1020;--panel:#121a2f;--panel2:#17213b;--text:#edf2ff;--muted:#b8c4df;--accent:#8bb0ff;--accent2:#70e1c3;--border:#2a385f;--code:#080d18}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.65}header{border-bottom:1px solid var(--border);background:linear-gradient(135deg,#111a31 0%,#0b1020 65%)}.wrap{max-width:1180px;margin:0 auto;padding:38px 28px}h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05}h2{margin-top:2.3rem;padding-top:.3rem;border-top:1px solid var(--border)}h3{margin-top:1.8rem}p,li{color:var(--muted)}strong,code{color:var(--text)}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.eyebrow{text-transform:uppercase;letter-spacing:.14em;color:var(--accent2);font-weight:700;font-size:.78rem}.lede{max-width:920px;font-size:1.08rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px}.card h3{margin-top:0}.mermaid{background:#fff;color:#111827;border:1px solid #dbe3f0;border-radius:14px;padding:20px;overflow-x:auto;margin:18px 0 28px;min-height:92px}.mermaid svg{display:block;max-width:100%!important;height:auto!important;margin:0 auto}.mermaid svg text,.mermaid svg tspan{fill:#111827!important}.mermaid svg .label,.mermaid svg .nodeLabel,.mermaid svg .edgeLabel,.mermaid svg .messageText,.mermaid svg .loopText,.mermaid svg .noteText,.mermaid svg foreignObject,.mermaid svg foreignObject div,.mermaid svg foreignObject span,.mermaid svg foreignObject p{color:#111827!important}.mermaid-fallback{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;line-height:1.55;color:#111827!important;background:#f8fafc}.diagram-status{margin:14px 0 -6px;padding:10px 12px;border-radius:9px;font-size:.88rem}.diagram-status-error{color:#7f1d1d;background:#fef2f2;border:1px solid #fecaca}pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em}table{width:100%;border-collapse:collapse;margin:18px 0}th,td{border:1px solid var(--border);padding:11px 12px;text-align:left;vertical-align:top}th{background:var(--panel2)}td{color:var(--muted)}.note{border-left:4px solid var(--accent2);background:var(--panel);padding:12px 16px;margin:18px 0;border-radius:0 10px 10px 0}.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.nav a{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:var(--panel)}.badge{display:inline-block;padding:.12rem .48rem;border:1px solid var(--border);border-radius:999px;color:var(--accent2);font-size:.8rem}footer{margin-top:48px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
 </style>
-</head><body><header><div class="wrap"><div class="eyebrow">CareerVector Engineering Design · v0.4</div><h1>Data Pipeline</h1><p class="lede">Detailed ingestion, normalization, enrichment, role expansion, and persistence for the v0.4 knowledge base.</p><div class="nav">
+</head><body><header><div class="wrap"><div class="eyebrow">CareerVector Engineering Design · v0.4</div><h1>Career Knowledge Base</h1><p class="lede">The normalized data model that makes CareerVector more versatile across majors, concentrations, skills, and specific career titles.</p><div class="nav">
 <a href="index.html">Design Index</a><a href="system_architecture.html">System Architecture</a><a href="career_knowledge_base.html">Career Knowledge Base</a><a href="data_pipeline.html">Data Pipeline</a><a href="retrieval_engines.html">Retrieval & Ranking</a><a href="rag_workflow.html">RAG Workflow</a><a href="ui_request_flow.html">UI & Request Flow</a><a href="testing_and_evolution.html">Testing & Evolution</a>
 </div></div></header><main class="wrap">
-<section><h2>Download Pipeline</h2><div class="mermaid">
+<section><h2>Source Contributions</h2><div class="mermaid">
+flowchart TB
+ ON[O*NET 30.3] --> K[CareerRole knowledge base]
+ NC[NCES CIP to SOC] --> K
+ BW[BLS OEWS wages] --> K
+ BP[BLS 2024-2034 projections] --> K
+ ES[ESCO v1.2.1 optional] --> K
+ ON --- O1[Occupation descriptions]
+ ON --- O2[57K+ job titles]
+ ON --- O3[Skills, tasks, interests, software]
+ NC --- N1[Major and field-of-study compatibility]
+ BW --- W1[Mean, median, wage percentiles]
+ BP --- P1[Growth, openings, education]
+ ES --- E1[Additional occupations and skills]
+</div></section>
+<section><h2>CareerRole Schema</h2><div class="mermaid">
+classDiagram
+ class CareerRole {
+  +string role_id
+  +string title
+  +string parent_title
+  +string source
+  +string onet_soc_code
+  +string base_soc
+  +string description
+  +string related_titles
+  +string compatible_majors
+  +string skills
+  +string knowledge
+  +string interests
+  +string tasks
+  +string technologies
+  +float median_salary
+  +float growth_percent
+  +float annual_openings
+  +string typical_education
+  +string document
+ }
+</div></section>
+<section><h2>Inheritance Model</h2><div class="mermaid">
 flowchart LR
- D[download_data.py] --> ON[O*NET CSV files]
- D --> NC[NCES CIP-SOC XLSX]
- D --> OE[BLS OEWS ZIP to XLSX]
- D --> BP[BLS projections XLSX]
- ES[Manual optional ESCO CSV download] --> EDIR[data/raw/esco]
- ON --> RAW[(data/raw)]
- NC --> RAW
- OE --> RAW
- BP --> RAW
- EDIR --> RAW
+ P[Computer Hardware Engineers] --> A[FPGA Engineer]
+ P --> B[ASIC Design Engineer]
+ P --> C[Embedded Hardware Engineer]
+ P --> D[Digital Hardware Engineer]
+ META[Parent validated evidence] --> P
+ META --> M1[Skills and tasks]
+ META --> M2[NCES compatible majors]
+ META --> M3[BLS wages and outlook]
+</div><p>Specific role titles are not treated as independent fabricated occupations. O*NET alternate titles inherit evidence from their validated parent occupation while preserving the title that users actually recognize.</p></section>
+<section><h2>Optional ESCO Boundary</h2><p>ESCO roles are appended only when the official English CSV package exists under <code>data/raw/esco/</code>. They do not automatically receive U.S. salary or CIP metadata because CareerVector avoids inventing unsupported cross-taxonomy mappings.</p><div class="mermaid">
+flowchart LR
+ ZIP[Official ESCO CSV package] --> DET[Flexible CSV detection]
+ DET --> OCC[ESCO occupations]
+ DET --> SK[Occupation-skill relations if present]
+ OCC --> ER[ESCO CareerRole records]
+ SK --> ER
+ ER --> KB[Shared role corpus]
 </div></section>
-<section><h2>Normalization and Joins</h2><div class="mermaid">
-flowchart TD
- O[O*NET occupation code 17-2061.00] --> NS[normalize_soc]
- NS --> S[17-2061]
- C[NCES SOC 17-2061] --> J1{SOC join}
- B[BLS NEM code 17-2061] --> J1
- W[BLS OEWS OCC_CODE 17-2061] --> J1
- S --> J1
- J1 --> EN[Enriched parent occupation]
-</div></section>
-<section><h2>Role Expansion</h2><div class="mermaid">
-flowchart TD
- P[Enriched parent occupation] --> JT[O*NET Job Titles]
- JT --> X[One record per unique title and parent SOC]
- P --> X
- X --> RID[Stable role_id hash]
- X --> DOC[Role-specific TF-IDF document]
- X --> SEM[Role-specific semantic document]
- DOC --> OUT[(career_roles.csv)]
- SEM --> OUT
-</div></section>
-<section><h2>Generated Corpora</h2><table><tr><th>File</th><th>Purpose</th></tr><tr><td><code>occupations.csv</code></td><td>One row per broad O*NET occupation for inspection and debugging.</td></tr><tr><td><code>career_roles.csv</code></td><td>Primary retrieval corpus. One row per specific role title plus inherited evidence and optional ESCO records.</td></tr></table></section>
-<section><h2>Data Quality Rules</h2><ul><li>NCES and BLS joins are performed on normalized SOC identifiers, not occupation-name string matching.</li><li>BLS projection median wage is used only as a median fallback when OEWS median wage is unavailable.</li><li>ESCO remains optional and does not receive U.S.-specific metadata without a trustworthy mapping.</li><li>Duplicate job titles are removed per parent O*NET code.</li><li>Raw and processed large datasets remain Git-ignored and reproducible through build scripts.</li></ul></section>
 </main><footer><div class="wrap">CareerVector v0.4 · Multi-source knowledge base · Hybrid ranking · Local Ollama RAG</div></footer></body></html>

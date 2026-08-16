@@ -25,8 +25,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Recommendation engine to use (default: tfidf)",
     )
     parser.add_argument("--major", default="")
+    parser.add_argument("--concentration", default="")
     parser.add_argument("--interests", default="", help="Comma-separated interests")
-    parser.add_argument("--specializations", default="", help="Comma-separated specializations")
+    parser.add_argument("--specializations", default="", help="Comma-separated technical specializations")
+    parser.add_argument("--skills", default="", help="Comma-separated skills")
     parser.add_argument("--preferred-work", default="", help="Comma-separated preferred work")
     parser.add_argument("--keywords", default="", help="Comma-separated extra keywords")
     parser.add_argument("--avoid", default="", help="Comma-separated things to avoid")
@@ -49,8 +51,10 @@ def main() -> None:
     args = build_parser().parse_args()
     profile = CareerProfile(
         major=args.major,
+        concentration=args.concentration,
         interests=split_csv_text(args.interests),
         specializations=split_csv_text(args.specializations),
+        skills=split_csv_text(args.skills),
         preferred_work=split_csv_text(args.preferred_work),
         keywords=split_csv_text(args.keywords),
         avoid=split_csv_text(args.avoid),
@@ -58,13 +62,10 @@ def main() -> None:
     )
 
     if args.method == "rag":
-        advisor = RAGCareerAdvisor.load(
-            model_name=args.llm_model,
-            ollama_base_url=args.ollama_url,
-        )
+        advisor = RAGCareerAdvisor.load(model_name=args.llm_model, ollama_base_url=args.ollama_url)
         response = advisor.advise(profile, top_k=args.top_k)
         if not response.sources:
-            print("No occupations met the supplied constraints.")
+            print("No career roles met the supplied constraints.")
             return
         print(
             f"\nCareerVector RAG analysis — generator={response.generator_model}, "
@@ -73,43 +74,44 @@ def main() -> None:
         print(response.answer)
         print("\nRetrieved evidence\n" + "-" * 72)
         for item in response.sources:
-            print(f"[CV{item['rank']}] {item['occupation']} ({item['onet_soc_code']})")
-            print(
-                f"    Semantic relevance: {item['match_score']:.2f} "
-                "(cosine x 100; not a probability)"
-            )
-            print(
-                f"    Median wage: {_money(item['median_salary'])} | "
-                f"Mean wage: {_money(item['mean_salary'])}"
-            )
+            parent = item.get("parent_occupation")
+            parent_text = f" · parent: {parent}" if parent and parent != item.get("occupation") else ""
+            print(f"[CV{item['rank']}] {item['occupation']} ({item.get('onet_soc_code') or item.get('source')}){parent_text}")
+            print(f"    Combined score: {item['match_score']:.2f}")
+            print(f"    Retrieval: {item.get('retrieval_score', 0):.2f} | Academic: {item.get('academic_alignment') or 0:.2f}")
+            print(f"    Median wage: {_money(item.get('median_salary'))} | Growth: {item.get('growth_percent')}")
         return
 
     if args.method == "embeddings":
         model = EmbeddingCareerVectorModel.load()
-        score_label = "Semantic relevance"
+        score_label = "Semantic retrieval"
     else:
         model = CareerVectorModel.load()
-        score_label = "TF-IDF relevance"
+        score_label = "TF-IDF retrieval"
 
     results = model.recommend(profile, top_k=args.top_k)
     if not results:
-        print("No occupations met the supplied constraints.")
+        print("No career roles met the supplied constraints.")
         return
 
     print(f"\nCareerVector recommendations — {args.method}\n" + "=" * 72)
     for item in results:
-        print(f"#{item['rank']}  {item['occupation']}  ({item['onet_soc_code']})")
-        print(f"    {score_label}: {item['match_score']:.2f} (cosine x 100; not a probability)")
-        print(
-            f"    Median wage: {_money(item['median_salary'])} | "
-            f"Mean wage: {_money(item['mean_salary'])}"
-        )
-        if item["sample_job_titles"]:
+        parent = item.get("parent_occupation")
+        parent_text = f" · parent: {parent}" if parent and parent != item.get("occupation") else ""
+        print(f"#{item['rank']}  {item['occupation']}  ({item.get('onet_soc_code') or item.get('source')}){parent_text}")
+        print(f"    Combined score: {item['match_score']:.2f}")
+        print(f"    {score_label}: {item.get('retrieval_score', 0):.2f}")
+        if item.get("academic_alignment") is not None:
+            print(f"    Academic alignment: {item['academic_alignment']:.2f}")
+        if item.get("growth_percent") is not None:
+            print(f"    BLS growth 2024-34: {item['growth_percent']:.1f}%")
+        print(f"    Median wage: {_money(item.get('median_salary'))} | Mean wage: {_money(item.get('mean_salary'))}")
+        if item.get("academic_matches"):
+            print("    Related fields of study: " + "; ".join(item["academic_matches"]))
+        if item.get("sample_job_titles"):
             print("    Related titles: " + "; ".join(item["sample_job_titles"]))
         if args.method == "tfidf" and item.get("matched_terms"):
             print("    Matched terms: " + ", ".join(item["matched_terms"]))
-        if item["top_interests"]:
-            print("    O*NET interests: " + ", ".join(item["top_interests"]))
         print()
 
 

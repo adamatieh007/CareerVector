@@ -1,33 +1,42 @@
 # CareerVector data
 
-The repository intentionally does **not** commit the raw O*NET or BLS datasets.
+CareerVector v0.4 builds a **multi-source career knowledge base**. Large downloaded/generated files are intentionally ignored by Git.
+
+## Automatically downloaded sources
+
 Run:
 
 ```bash
 python scripts/download_data.py
 ```
 
-The downloader fetches the current project-pinned datasets:
+This downloads:
 
-## O*NET 30.3 (CSV)
+- **O*NET 30.3** occupation records, 57K+ alternate job titles, tasks, skills, knowledge, interests, work activities, and software/technology examples.
+- **NCES 2020 CIP → 2018 SOC Crosswalk** for structured major/field-of-study compatibility.
+- **BLS OEWS May 2025** national wage data.
+- **BLS Employment Projections 2024–2034** for employment growth, annual openings, median wage fallback, and typical entry education.
 
-- `occupation_data.csv` — occupation title + description
-- `job_titles.csv` — alternate/lay job titles (important for terms such as FPGA Engineer)
-- `task_statements.csv` — occupation task text
-- `essential_skills.csv` — occupation skill ratings
-- `knowledge.csv` — occupation knowledge ratings
-- `specific_interest_areas.csv` — occupation-specific interest ratings
-- `software_skills.csv` — technology/software examples
-- `work_activities.csv` — occupation work-activity ratings
+## Optional ESCO enrichment
 
-Official database page: https://www.onetcenter.org/database.html
+ESCO's official download portal uses interactive package selection. To enable it:
 
-## BLS OEWS May 2025 national estimates
+1. Download the **ESCO v1.2.1 English CSV classification** from the official ESCO download page.
+2. Unzip the CSV package under:
 
-- `national_M2025_dl.xlsx` — national occupation wage estimates, extracted from the
-  official `oesm25nat.zip` archive.
+```text
+data/raw/esco/
+```
 
-Official tables page: https://www.bls.gov/oes/tables.htm
+3. Run `python scripts/build_dataset.py` again.
 
-See the upstream sources for their respective licenses/terms. O*NET 30.3 is
-published under a Creative Commons license; BLS is a U.S. federal statistical source.
+CareerVector detects occupation CSVs and, when available, occupation-skill relation files automatically. ESCO-only roles intentionally do not inherit U.S. salary/CIP metadata unless a trustworthy mapping exists.
+
+## Generated files
+
+`python scripts/build_dataset.py` creates:
+
+- `data/processed/occupations.csv` — 1 row per broad O*NET occupation, retained for inspection.
+- `data/processed/career_roles.csv` — retrieval corpus with one row per specific role/title. O*NET alternate titles inherit their parent occupation's validated metadata; optional ESCO occupations are appended as extra roles.
+
+Do not commit `data/raw/*`, `data/processed/*`, or generated `artifacts/*`.

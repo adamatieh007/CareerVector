@@ -17,7 +17,7 @@ SUPPORTED_STARTS = (
 
 def test_design_docs_have_valid_links_visible_fallbacks_and_diagram_sources() -> None:
     pages = sorted(DOCS.glob("*.html"))
-    assert len(pages) == 7
+    assert len(pages) == 8
 
     diagram_count = 0
     for page in pages:
@@ -43,4 +43,4 @@ def test_design_docs_have_valid_links_visible_fallbacks_and_diagram_sources() ->
         assert ".mermaid-fallback" in text
         assert "color:#111827" in text or "color: #111827" in text
 
-    assert diagram_count >= 20
+    assert diagram_count >= 25

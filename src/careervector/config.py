@@ -7,7 +7,10 @@ RAW_DIR = DATA_DIR / "raw"
 PROCESSED_DIR = DATA_DIR / "processed"
 ARTIFACT_DIR = PROJECT_ROOT / "artifacts"
 
+# Processed corpora. v0.4 keeps the original occupation-level file for inspection,
+# but retrieval is trained on the much more granular career-role corpus.
 OCCUPATIONS_PATH = PROCESSED_DIR / "occupations.csv"
+CAREER_ROLES_PATH = PROCESSED_DIR / "career_roles.csv"
 
 # TF-IDF artifacts
 VECTORIZER_PATH = ARTIFACT_DIR / "tfidf_vectorizer.joblib"
@@ -20,11 +23,14 @@ EMBEDDING_MATRIX_PATH = ARTIFACT_DIR / "occupation_embeddings.npy"
 EMBEDDING_METADATA_PATH = ARTIFACT_DIR / "embedding_metadata.csv"
 EMBEDDING_INFO_PATH = ARTIFACT_DIR / "embedding_model_info.json"
 DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+ARTIFACT_SCHEMA_VERSION = 2
+CAREER_CORPUS_KIND = "career_roles"
 
 # Local RAG generator (Ollama)
 DEFAULT_OLLAMA_BASE_URL = os.getenv("CAREERVECTOR_OLLAMA_URL", "http://localhost:11434")
 DEFAULT_OLLAMA_MODEL = os.getenv("CAREERVECTOR_OLLAMA_MODEL", "gemma3")
 
+# O*NET 30.3
 ONET_RELEASE = "30.3"
 ONET_BASE = "https://www.onetcenter.org/dl_files/database/db_30_3_csv"
 ONET_FILES = {
@@ -38,6 +44,23 @@ ONET_FILES = {
     "work_activities.csv": f"{ONET_BASE}/work_activities.csv",
 }
 
+# BLS OEWS wages
 BLS_RELEASE = "May 2025"
 BLS_NATIONAL_ZIP_URL = "https://www.bls.gov/oes/special-requests/oesm25nat.zip"
 BLS_NATIONAL_XLSX = "national_M2025_dl.xlsx"
+
+# NCES CIP -> SOC academic crosswalk. This maps fields of study to occupations.
+NCES_CIP_RELEASE = "2020 CIP / 2018 SOC"
+NCES_CIP_SOC_URL = "https://nces.ed.gov/ipeds/cipcode/Files/CIP2020_SOC2018_Crosswalk.xlsx"
+NCES_CIP_SOC_XLSX = "CIP2020_SOC2018_Crosswalk.xlsx"
+
+# BLS Employment Projections 2024-2034. Table 1.2 includes growth, annual openings,
+# median wage, and typical education for detailed National Employment Matrix occupations.
+BLS_PROJECTIONS_RELEASE = "2024-2034"
+BLS_PROJECTIONS_URL = "https://www.bls.gov/emp/ind-occ-matrix/occupation.xlsx"
+BLS_PROJECTIONS_XLSX = "bls_occupation_projections_2024_2034.xlsx"
+
+# ESCO is optional because the official download portal requires an interactive package
+# selection. Download the English CSV classification and unzip it under this directory.
+ESCO_RELEASE = "1.2.1"
+ESCO_DIR = RAW_DIR / "esco"

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
 from pathlib import Path
 
 import joblib
@@ -13,12 +12,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from careervector.config import (
     ARTIFACT_DIR,
+    ARTIFACT_SCHEMA_VERSION,
+    CAREER_CORPUS_KIND,
     MATRIX_PATH,
     METADATA_PATH,
     MODEL_INFO_PATH,
     VECTORIZER_PATH,
 )
 from careervector.profile import CareerProfile
+from careervector.ranking import academic_matches_for_row, combine_relevance_scores, select_diverse_indices
 
 
 class CareerVectorModel:
@@ -32,22 +34,17 @@ class CareerVectorModel:
         self.matrix = matrix.tocsr()
         self.metadata = metadata.reset_index(drop=True)
         if self.matrix.shape[0] != len(self.metadata):
-            raise ValueError("TF-IDF row count does not match occupation metadata row count")
+            raise ValueError("TF-IDF row count does not match career-role metadata row count")
 
     @classmethod
-    def train(
-        cls,
-        occupations: pd.DataFrame,
-        *,
-        max_features: int = 100_000,
-    ) -> "CareerVectorModel":
+    def train(cls, occupations: pd.DataFrame, *, max_features: int = 125_000) -> "CareerVectorModel":
         vectorizer = TfidfVectorizer(
             lowercase=True,
             strip_accents="unicode",
             stop_words="english",
             ngram_range=(1, 2),
             min_df=1,
-            max_df=0.98,
+            max_df=0.985,
             max_features=max_features,
             sublinear_tf=True,
             norm="l2",
@@ -63,20 +60,39 @@ class CareerVectorModel:
         sparse.save_npz(artifact_dir / MATRIX_PATH.name, self.matrix)
         self.metadata.to_csv(artifact_dir / METADATA_PATH.name, index=False)
         info = {
-            "model": "tfidf_cosine_similarity",
-            "num_occupations": int(self.matrix.shape[0]),
+            "model": "tfidf_hybrid_career_role_ranker",
+            "artifact_schema_version": ARTIFACT_SCHEMA_VERSION,
+            "corpus_kind": CAREER_CORPUS_KIND,
+            "num_roles": int(self.matrix.shape[0]),
             "num_features": int(self.matrix.shape[1]),
-            "vectorizer": {
-                "ngram_range": [1, 2],
-                "sublinear_tf": True,
-                "norm": "l2",
-                "stop_words": "english",
+            "ranking": {
+                "retrieval_weight": 0.58,
+                "academic_weight": 0.24,
+                "title_weight": 0.13,
+                "outlook_weight": 0.05,
+                "academic_source": "NCES CIP 2020 to SOC 2018 crosswalk",
+                "outlook_source": "BLS Employment Projections 2024-2034",
             },
         }
         (artifact_dir / MODEL_INFO_PATH.name).write_text(json.dumps(info, indent=2) + "\n")
 
     @classmethod
     def load(cls, artifact_dir: Path = ARTIFACT_DIR) -> "CareerVectorModel":
+        info_path = artifact_dir / MODEL_INFO_PATH.name
+        if not info_path.exists():
+            raise FileNotFoundError(
+                f"{info_path} does not exist. Run `python scripts/train_tfidf.py` first."
+            )
+        info = json.loads(info_path.read_text())
+        if (
+            info.get("artifact_schema_version") != ARTIFACT_SCHEMA_VERSION
+            or info.get("corpus_kind") != CAREER_CORPUS_KIND
+        ):
+            raise RuntimeError(
+                "Your TF-IDF artifacts were built by an older CareerVector corpus. "
+                "v0.4 ranks specific career roles, so rebuild with: "
+                "`python scripts/build_dataset.py` then `python scripts/train_tfidf.py`."
+            )
         vectorizer = joblib.load(artifact_dir / VECTORIZER_PATH.name)
         matrix = sparse.load_npz(artifact_dir / MATRIX_PATH.name).tocsr()
         metadata = pd.read_csv(artifact_dir / METADATA_PATH.name)
@@ -96,11 +112,7 @@ class CareerVectorModel:
         if not titles:
             return []
         query_tokens = {t.lower() for t in query_text.replace("/", " ").replace("-", " ").split() if len(t) > 2}
-        ranked = sorted(
-            titles,
-            key=lambda title: sum(token in title.lower() for token in query_tokens),
-            reverse=True,
-        )
+        ranked = sorted(titles, key=lambda title: sum(token in title.lower() for token in query_tokens), reverse=True)
         return ranked[:limit]
 
     def recommend(
@@ -113,7 +125,7 @@ class CareerVectorModel:
     ) -> list[dict[str, object]]:
         positive_text = profile.positive_text()
         if not positive_text.strip():
-            raise ValueError("Provide at least a major, interest, specialization, preferred-work item, or keyword")
+            raise ValueError("Provide at least a major, concentration, interest, skill, specialization, preferred-work item, or keyword")
 
         query_vec = self.vectorizer.transform([positive_text]).tocsr()
         positive_scores = cosine_similarity(query_vec, self.matrix).ravel()
@@ -123,7 +135,10 @@ class CareerVectorModel:
             avoid_vec = self.vectorizer.transform([profile.avoid_text()]).tocsr()
             avoid_scores = cosine_similarity(avoid_vec, self.matrix).ravel()
 
-        final_scores = positive_scores - avoid_weight * avoid_scores
+        retrieval_scores = positive_scores - avoid_weight * avoid_scores
+        combined_scores, academic_scores, title_scores, outlook = combine_relevance_scores(
+            retrieval_scores, self.metadata, profile
+        )
         eligible = np.ones(len(self.metadata), dtype=bool)
 
         if profile.minimum_salary is not None:
@@ -135,22 +150,37 @@ class CareerVectorModel:
         eligible_indices = np.flatnonzero(eligible)
         if len(eligible_indices) == 0:
             return []
-        ranked_indices = eligible_indices[np.argsort(final_scores[eligible_indices])[::-1]][:top_k]
+        ranked_indices = select_diverse_indices(combined_scores, eligible_indices, self.metadata, top_k=top_k)
 
         results: list[dict[str, object]] = []
         for rank, idx in enumerate(ranked_indices, start=1):
             row = self.metadata.iloc[int(idx)]
+            academic = float(academic_scores[idx]) if np.isfinite(academic_scores[idx]) else None
+            title_score = float(title_scores[idx]) if np.isfinite(title_scores[idx]) else None
+            outlook_score = float(outlook[idx]) if np.isfinite(outlook[idx]) else None
             results.append(
                 {
                     "rank": rank,
                     "engine": "tfidf",
+                    "role_id": row.get("role_id"),
+                    "source": row.get("source", "O*NET"),
+                    "role_kind": row.get("role_kind"),
                     "onet_soc_code": row.get("onet_soc_code"),
                     "occupation": row.get("title"),
-                    "match_score": round(float(max(0.0, final_scores[idx])) * 100, 2),
+                    "parent_occupation": row.get("parent_title"),
+                    "match_score": round(float(max(0.0, combined_scores[idx])) * 100, 2),
                     "similarity": round(float(positive_scores[idx]) * 100, 2),
+                    "retrieval_score": round(float(max(0.0, retrieval_scores[idx])) * 100, 2),
+                    "academic_alignment": round(academic * 100, 2) if academic is not None else None,
+                    "title_alignment": round(title_score * 100, 2) if title_score is not None else None,
+                    "outlook_score": round(outlook_score * 100, 2) if outlook_score is not None else None,
                     "avoid_penalty": round(float(avoid_scores[idx]) * avoid_weight * 100, 2),
                     "median_salary": _number_or_none(row.get("median_salary")),
                     "mean_salary": _number_or_none(row.get("mean_salary")),
+                    "growth_percent": _number_or_none(row.get("growth_percent")),
+                    "annual_openings": _number_or_none(row.get("annual_openings")),
+                    "typical_education": _text_or_none(row.get("typical_education")),
+                    "academic_matches": academic_matches_for_row(row, profile),
                     "sample_job_titles": self._matching_titles(row.get("job_titles"), positive_text),
                     "matched_terms": self._top_shared_terms(query_vec, int(idx)),
                     "description": row.get("description"),
@@ -170,6 +200,13 @@ class CareerVectorModel:
 def _number_or_none(value: object) -> float | None:
     number = pd.to_numeric(pd.Series([value]), errors="coerce").iloc[0]
     return None if pd.isna(number) else float(number)
+
+
+def _text_or_none(value: object) -> str | None:
+    if value is None or pd.isna(value):
+        return None
+    text = str(value).strip()
+    return text if text and text.lower() != "nan" else None
 
 
 def _pipe_list(value: object, limit: int) -> list[str]:

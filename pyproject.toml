@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "careervector"
-version = "0.3.0"
-description = "A local career recommendation and RAG engine using TF-IDF, sentence embeddings, O*NET/BLS data, and Ollama."
+version = "0.4.0"
+description = "A local multi-source career recommendation and RAG engine using TF-IDF, sentence embeddings, NCES/O*NET/BLS/ESCO data, and Ollama."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}

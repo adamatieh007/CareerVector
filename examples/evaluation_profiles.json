@@ -2,10 +2,21 @@
   {
     "name": "computer hardware and FPGA",
     "major": "Computer Engineering",
+    "concentration": "Computer Architecture",
     "interests": ["digital hardware", "FPGA", "computer architecture"],
     "specializations": ["embedded systems", "hardware engineering"],
+    "skills": ["Verilog", "SystemVerilog", "C++"],
     "preferred_work": ["low-level systems"],
     "expected_onet_codes": ["17-2061.00", "17-2072.00", "15-1252.00"]
+  },
+  {
+    "name": "biomedical and medical physics",
+    "major": "Biomedical Physics",
+    "concentration": "Medical Physics",
+    "interests": ["radiation oncology", "dosimetry", "medical imaging"],
+    "skills": ["physics", "research"],
+    "preferred_work": ["clinical research"],
+    "expected_onet_codes": ["19-2012.00", "29-2036.00", "25-1054.00"]
   },
   {
     "name": "physics research",
@@ -18,25 +29,43 @@
   {
     "name": "data science and machine learning",
     "major": "Computer Science",
+    "concentration": "Artificial Intelligence",
     "interests": ["machine learning", "statistics", "data analysis"],
-    "specializations": ["artificial intelligence"],
+    "skills": ["Python", "SQL"],
     "preferred_work": ["build predictive models"],
     "expected_onet_codes": ["15-2051.00", "15-1221.00"]
   },
   {
     "name": "civil infrastructure",
     "major": "Civil Engineering",
+    "concentration": "Structural Engineering",
     "interests": ["bridges", "roads", "infrastructure"],
-    "specializations": ["structural engineering"],
     "preferred_work": ["design physical infrastructure"],
     "expected_onet_codes": ["17-2051.00"]
   },
   {
     "name": "cybersecurity",
     "major": "Computer Science",
+    "concentration": "Cybersecurity",
     "interests": ["cybersecurity", "network security", "vulnerability analysis"],
-    "specializations": ["penetration testing"],
+    "skills": ["Linux", "Python"],
     "preferred_work": ["protect computer systems"],
     "expected_onet_codes": ["15-1212.00", "15-1299.04"]
+  },
+  {
+    "name": "accounting and audit",
+    "major": "Accounting",
+    "interests": ["audit", "financial reporting", "tax"],
+    "skills": ["spreadsheets", "financial analysis"],
+    "preferred_work": ["analyze financial records"],
+    "expected_onet_codes": ["13-2011.00"]
+  },
+  {
+    "name": "registered nursing",
+    "major": "Nursing",
+    "interests": ["patient care", "clinical medicine", "healthcare"],
+    "skills": ["patient assessment"],
+    "preferred_work": ["direct patient care"],
+    "expected_onet_codes": ["29-1141.00"]
   }
 ]

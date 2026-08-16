@@ -34,28 +34,43 @@ def _money(value: object) -> str:
         return "Unavailable"
 
 
+def _percent(value: object) -> str:
+    try:
+        if value is None:
+            return "Unavailable"
+        return f"{float(value):.1f}%"
+    except (TypeError, ValueError):
+        return "Unavailable"
+
+
 def build_rag_context(
     recommendations: list[Mapping[str, object]],
     *,
-    max_chars_per_source: int = 4200,
+    max_chars_per_source: int = 5200,
 ) -> str:
-    """Turn retrieved occupations into citation-addressable grounding context.
-
-    Source IDs such as [CV1] are deliberately stable within one request so the
-    generator can cite the exact retrieved occupation used for a claim.
-    """
+    """Turn retrieved career roles into citation-addressable grounding context."""
     blocks: list[str] = []
     for index, item in enumerate(recommendations, start=1):
         source_id = f"CV{index}"
+        parent = _clean(item.get("parent_occupation"))
+        title = _clean(item.get("occupation"))
         lines = [
             f"[{source_id}]",
-            f"Occupation: {_clean(item.get('occupation'))}",
+            f"Career role: {title}",
+            f"Parent occupation: {parent}" if parent and parent != title else "",
+            f"Taxonomy source: {_clean(item.get('source'))}",
             f"O*NET-SOC: {_clean(item.get('onet_soc_code'))}",
-            f"Retrieval relevance score: {_clean(item.get('match_score'))}",
+            f"Combined recommendation score: {_clean(item.get('match_score'))}",
+            f"Retrieval score: {_clean(item.get('retrieval_score'))}",
+            f"Academic alignment score: {_clean(item.get('academic_alignment'))}",
             f"Description: {_clean(item.get('description'))}",
             "Related titles: " + ", ".join(_items(item.get("sample_job_titles"), limit=8)),
+            "Matched academic programs: " + ", ".join(_items(item.get("academic_matches"), limit=6)),
             f"Median annual wage: {_money(item.get('median_salary'))}",
             f"Mean annual wage: {_money(item.get('mean_salary'))}",
+            f"BLS projected employment growth, 2024-2034: {_percent(item.get('growth_percent'))}",
+            f"BLS annual openings, 2024-2034 average (thousands): {_clean(item.get('annual_openings'))}",
+            f"Typical entry education: {_clean(item.get('typical_education'))}",
             "Interests: " + ", ".join(_items(item.get("top_interests"), limit=8)),
             "Skills: " + ", ".join(_items(item.get("top_skills"), limit=8)),
             "Knowledge: " + ", ".join(_items(item.get("top_knowledge"), limit=8)),
@@ -64,6 +79,6 @@ def build_rag_context(
             "Software/technologies: " + ", ".join(_items(item.get("software_skills"), limit=10)),
             f"[/{source_id}]",
         ]
-        block = "\n".join(line for line in lines if not line.endswith(": "))
+        block = "\n".join(line for line in lines if line and not line.endswith(": "))
         blocks.append(block[:max_chars_per_source])
     return "\n\n".join(blocks)

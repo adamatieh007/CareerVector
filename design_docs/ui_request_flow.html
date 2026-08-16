@@ -15,136 +15,99 @@
       note.textContent = message;
       block.before(note);
     };
-
     if (!window.mermaid) {
       blocks.forEach((block) => fallback(block, 'Mermaid could not load. Diagram source is shown below.'));
       return;
     }
-
     mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: 'loose',
-      theme: 'base',
-      flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: true },
-      sequence: { useMaxWidth: true, wrap: true },
-      themeVariables: {
-        background: '#ffffff', primaryColor: '#eef2ff', primaryTextColor: '#111827',
-        primaryBorderColor: '#4f46e5', secondaryColor: '#ecfeff', secondaryTextColor: '#111827',
-        secondaryBorderColor: '#0891b2', tertiaryColor: '#f8fafc', tertiaryTextColor: '#111827',
-        tertiaryBorderColor: '#64748b', lineColor: '#475569', textColor: '#111827',
-        mainBkg: '#ffffff', nodeBorder: '#64748b', clusterBkg: '#f8fafc', clusterBorder: '#cbd5e1',
-        edgeLabelBackground: '#ffffff', actorBkg: '#eef2ff', actorBorder: '#4f46e5',
-        actorTextColor: '#111827', actorLineColor: '#64748b', signalColor: '#334155',
-        signalTextColor: '#111827', labelBoxBkgColor: '#ffffff', labelBoxBorderColor: '#94a3b8',
-        labelTextColor: '#111827', loopTextColor: '#111827', noteBkgColor: '#fff7ed',
-        noteBorderColor: '#f59e0b', noteTextColor: '#111827', activationBkgColor: '#dbeafe',
-        activationBorderColor: '#2563eb', classText: '#111827'
+      startOnLoad:false, securityLevel:'loose', theme:'base',
+      flowchart:{curve:'basis',htmlLabels:true,useMaxWidth:true},
+      sequence:{useMaxWidth:true,wrap:true},
+      themeVariables:{
+        background:'#ffffff', primaryColor:'#eef2ff', primaryTextColor:'#111827', primaryBorderColor:'#4f46e5',
+        secondaryColor:'#ecfeff', secondaryTextColor:'#111827', secondaryBorderColor:'#0891b2',
+        tertiaryColor:'#f8fafc', tertiaryTextColor:'#111827', tertiaryBorderColor:'#64748b', lineColor:'#475569',
+        textColor:'#111827', mainBkg:'#ffffff', nodeBorder:'#64748b', clusterBkg:'#f8fafc', clusterBorder:'#cbd5e1',
+        edgeLabelBackground:'#ffffff', actorBkg:'#eef2ff', actorBorder:'#4f46e5', actorTextColor:'#111827',
+        actorLineColor:'#64748b', signalColor:'#334155', signalTextColor:'#111827', labelBoxBkgColor:'#ffffff',
+        labelBoxBorderColor:'#94a3b8', labelTextColor:'#111827', loopTextColor:'#111827', noteBkgColor:'#fff7ed',
+        noteBorderColor:'#f59e0b', noteTextColor:'#111827', activationBkgColor:'#dbeafe', activationBorderColor:'#2563eb',
+        classText:'#111827'
       }
     });
-
-    for (let i = 0; i < blocks.length; i += 1) {
-      const block = blocks[i];
-      const source = block.textContent.trim();
-      block.dataset.source = source;
-      try {
-        await mermaid.parse(source);
-        await mermaid.run({ nodes: [block], suppressErrors: false });
-      } catch (error) {
-        fallback(block, `Diagram ${i + 1} could not render: ${error?.message || error}`);
-      }
+    for (let i=0;i<blocks.length;i+=1) {
+      const block=blocks[i]; const source=block.textContent.trim(); block.dataset.source=source;
+      try { await mermaid.parse(source); await mermaid.run({nodes:[block],suppressErrors:false}); }
+      catch(error){ fallback(block, `Diagram ${i+1} could not render: ${error?.message || error}`); }
     }
-    document.documentElement.dataset.mermaidReady = 'true';
+    document.documentElement.dataset.mermaidReady='true';
   });
 </script>
 <style>
-:root { --bg:#0b1020; --panel:#121a2f; --panel2:#17213b; --text:#edf2ff; --muted:#b8c4df; --accent:#8bb0ff; --accent2:#70e1c3; --border:#2a385f; --code:#080d18; }
-* { box-sizing:border-box; }
-body { margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }
-header { border-bottom:1px solid var(--border); background:linear-gradient(135deg,#111a31 0%,#0b1020 65%); }
-.wrap { max-width:1180px; margin:0 auto; padding:38px 28px; }
-h1 { margin:0 0 10px; font-size:clamp(2rem,5vw,3.4rem); line-height:1.05; }
-h2 { margin-top:2.3rem; padding-top:.3rem; border-top:1px solid var(--border); }
-h3 { margin-top:1.8rem; }
-p,li { color:var(--muted); } strong,code { color:var(--text); }
-a { color:var(--accent); text-decoration:none; } a:hover{text-decoration:underline;}
-.eyebrow { text-transform:uppercase; letter-spacing:.14em; color:var(--accent2); font-weight:700; font-size:.78rem; }
-.lede { max-width:900px; font-size:1.08rem; }
-.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
-.card { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
-.card h3 { margin-top:0; }
-.mermaid { background:#fff; color:#111827; border:1px solid #dbe3f0; border-radius:14px; padding:20px; overflow-x:auto; margin:18px 0 28px; min-height:92px; }
-.mermaid svg { display:block; max-width:100%!important; height:auto!important; margin:0 auto; }
-.mermaid svg text,.mermaid svg tspan { fill:#111827!important; }
-.mermaid svg .label,.mermaid svg .nodeLabel,.mermaid svg .edgeLabel,.mermaid svg .messageText,.mermaid svg .loopText,.mermaid svg .noteText,.mermaid svg foreignObject,.mermaid svg foreignObject div,.mermaid svg foreignObject span,.mermaid svg foreignObject p { color:#111827!important; }
-.mermaid-fallback { white-space:pre-wrap; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92rem; line-height:1.55; color:#111827!important; background:#f8fafc; }
-.diagram-status { margin:14px 0 -6px; padding:10px 12px; border-radius:9px; font-size:.88rem; }
-.diagram-status-error { color:#7f1d1d; background:#fef2f2; border:1px solid #fecaca; }
-pre { background:var(--code); border:1px solid var(--border); border-radius:10px; padding:16px; overflow-x:auto; }
-code { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
-table { width:100%; border-collapse:collapse; margin:18px 0; } th,td{border:1px solid var(--border);padding:11px 12px;text-align:left;vertical-align:top;} th{background:var(--panel2);} td{color:var(--muted);}
-.note { border-left:4px solid var(--accent2); background:var(--panel); padding:12px 16px; margin:18px 0; border-radius:0 10px 10px 0; }
-.nav { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }.nav a{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:var(--panel);}
-.badge { display:inline-block; padding:.12rem .48rem; border:1px solid var(--border); border-radius:999px; color:var(--accent2); font-size:.8rem; }
-footer { margin-top:48px; border-top:1px solid var(--border); color:var(--muted); font-size:.9rem; }
+:root{--bg:#0b1020;--panel:#121a2f;--panel2:#17213b;--text:#edf2ff;--muted:#b8c4df;--accent:#8bb0ff;--accent2:#70e1c3;--border:#2a385f;--code:#080d18}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.65}header{border-bottom:1px solid var(--border);background:linear-gradient(135deg,#111a31 0%,#0b1020 65%)}.wrap{max-width:1180px;margin:0 auto;padding:38px 28px}h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05}h2{margin-top:2.3rem;padding-top:.3rem;border-top:1px solid var(--border)}h3{margin-top:1.8rem}p,li{color:var(--muted)}strong,code{color:var(--text)}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.eyebrow{text-transform:uppercase;letter-spacing:.14em;color:var(--accent2);font-weight:700;font-size:.78rem}.lede{max-width:920px;font-size:1.08rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px}.card h3{margin-top:0}.mermaid{background:#fff;color:#111827;border:1px solid #dbe3f0;border-radius:14px;padding:20px;overflow-x:auto;margin:18px 0 28px;min-height:92px}.mermaid svg{display:block;max-width:100%!important;height:auto!important;margin:0 auto}.mermaid svg text,.mermaid svg tspan{fill:#111827!important}.mermaid svg .label,.mermaid svg .nodeLabel,.mermaid svg .edgeLabel,.mermaid svg .messageText,.mermaid svg .loopText,.mermaid svg .noteText,.mermaid svg foreignObject,.mermaid svg foreignObject div,.mermaid svg foreignObject span,.mermaid svg foreignObject p{color:#111827!important}.mermaid-fallback{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;line-height:1.55;color:#111827!important;background:#f8fafc}.diagram-status{margin:14px 0 -6px;padding:10px 12px;border-radius:9px;font-size:.88rem}.diagram-status-error{color:#7f1d1d;background:#fef2f2;border:1px solid #fecaca}pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em}table{width:100%;border-collapse:collapse;margin:18px 0}th,td{border:1px solid var(--border);padding:11px 12px;text-align:left;vertical-align:top}th{background:var(--panel2)}td{color:var(--muted)}.note{border-left:4px solid var(--accent2);background:var(--panel);padding:12px 16px;margin:18px 0;border-radius:0 10px 10px 0}.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.nav a{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:var(--panel)}.badge{display:inline-block;padding:.12rem .48rem;border:1px solid var(--border);border-radius:999px;color:var(--accent2);font-size:.8rem}footer{margin-top:48px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
 </style>
-</head>
-<body><header><div class="wrap"><div class="eyebrow">CareerVector Engineering Design · v0.3</div><h1>UI &amp; Request Flow</h1><p class="lede">Three-mode Streamlit flow, local model discovery, request dispatch, and evidence-first RAG presentation.</p><div class="nav">
-<a href="index.html">Design Index</a>
-<a href="system_architecture.html">System Architecture</a>
-<a href="data_pipeline.html">Data Pipeline</a>
-<a href="retrieval_engines.html">Retrieval Engines</a>
-<a href="rag_workflow.html">RAG Workflow</a>
-<a href="ui_request_flow.html">UI & Request Flow</a>
-<a href="testing_and_evolution.html">Testing & Evolution</a>
-</div></div></header>
-<main class="wrap">
-<section><h2>1. Three-Mode Interaction</h2><div class="mermaid">
+</head><body><header><div class="wrap"><div class="eyebrow">CareerVector Engineering Design · v0.4</div><h1>UI &amp; Request Flow</h1><p class="lede">Frontend inputs, model selection, ranking breakdown, local RAG settings, and result presentation.</p><div class="nav">
+<a href="index.html">Design Index</a><a href="system_architecture.html">System Architecture</a><a href="career_knowledge_base.html">Career Knowledge Base</a><a href="data_pipeline.html">Data Pipeline</a><a href="retrieval_engines.html">Retrieval & Ranking</a><a href="rag_workflow.html">RAG Workflow</a><a href="ui_request_flow.html">UI & Request Flow</a><a href="testing_and_evolution.html">Testing & Evolution</a>
+</div></div></header><main class="wrap">
+<section><h2>Profile Inputs</h2><div class="mermaid">
 flowchart TB
-    U[User] --> M{Select mode}
-    M --> T[TF-IDF]
-    M --> E[Sentence Embeddings]
-    M --> R[RAG Embeddings plus Local LLM]
-    U --> P[Profile inputs]
-    U --> S[Salary and top K]
-    R --> O[Ollama server and model selector]
-    P --> SUB[Find my careers]
-    S --> SUB
-    O --> SUB
+ U[User] --> M[Major]
+ U --> C[Concentration]
+ U --> I[Interests]
+ U --> S[Technical specializations]
+ U --> SK[Skills]
+ U --> W[Preferred work]
+ U --> A[Avoid]
+ U --> SAL[Optional salary minimum]
+ M --> P[CareerProfile]
+ C --> P
+ I --> P
+ S --> P
+ SK --> P
+ W --> P
+ A --> P
+ SAL --> P
 </div></section>
-<section><h2>2. Profile Inputs</h2><p>The frontend collects major/background, interests, specializations, preferred work, avoid preferences, optional minimum salary, and top-K result count. The same <code>CareerProfile</code> object is used by all three modes.</p></section>
-<section><h2>3. RAG Model Discovery</h2><div class="mermaid">
-sequenceDiagram
-    actor User
-    participant UI as Streamlit
-    participant OC as OllamaClient
-    participant O as Ollama
-    User->>UI: Select RAG mode
-    UI->>OC: list_models()
-    OC->>O: GET api tags
-    alt Ollama reachable with models
-        O-->>OC: model list
-        OC-->>UI: selectable local models
-        UI-->>User: Show model dropdown
-    else unavailable or empty
-        O-->>OC: error or no models
-        UI-->>User: Show model text field and pull command
-    end
+<section><h2>Three-Mode Request</h2><div class="mermaid">
+stateDiagram-v2
+ [*] --> TFIDF
+ TFIDF --> Embeddings: select embeddings
+ Embeddings --> RAG: select RAG
+ RAG --> TFIDF: select TF-IDF
+ TFIDF --> Search: submit
+ Embeddings --> Search: submit
+ RAG --> Search: submit
+ Search --> TFIDF: results
+ Search --> Embeddings: results
+ Search --> RAG: results and explanation
 </div></section>
-<section><h2>4. Submit Flow by Mode</h2><div class="mermaid">
+<section><h2>Result Card</h2><div class="mermaid">
+classDiagram
+ class RecommendationCard {
+  +rank
+  +specific_role_title
+  +parent_occupation
+  +combined_score
+  +median_salary
+  +retrieval_score
+  +academic_alignment
+  +growth_percent
+  +matched_fields_of_study
+  +related_titles
+  +retrieved_evidence
+ }
+</div></section>
+<section><h2>Failure Paths</h2><div class="mermaid">
 flowchart TD
-    SUB[Submit] --> V[Validate profile]
-    V --> M{Mode}
-    M -->|TF-IDF| T[Load TF-IDF model]
-    M -->|Embeddings| E[Load embedding model]
-    M -->|RAG| RG[Load embedding model plus Ollama client]
-    T --> RR[Ranked results]
-    E --> RR
-    RG --> ADV[RAGCareerAdvisor]
-    ADV --> RA[Generated analysis plus sources]
-    RR --> CARDS[Result cards]
-    RA --> ANSWER[RAG answer]
-    RA --> CARDS
+ SUB[Submit] --> A{Artifacts present?}
+ A -->|no| REBUILD[Prompt rebuild v0.4 corpus and models]
+ A -->|yes| S{Salary removes all roles?}
+ S -->|yes| RELAX[Suggest removing salary minimum]
+ S -->|no| R{RAG mode?}
+ R -->|no| SHOW[Show ranked cards]
+ R -->|yes| O{Ollama available?}
+ O -->|no| START[Prompt to start or pull model]
+ O -->|yes| GEN[Generate cited explanation]
 </div></section>
-<section><h2>5. Result Presentation</h2><p>Direct retrieval modes show ranked cards. RAG mode first shows the generated analysis and generator/retriever metadata, then shows the retrieved occupation cards as inspectable evidence. The cards include wage data, related titles, interests, skills, knowledge, work activities, tasks, and software/technology fields when available.</p></section>
-<section><h2>6. UX Rules</h2><ul><li>Always identify the active mode.</li><li>Never present cosine similarity as model confidence.</li><li>Keep local-model errors actionable with <code>ollama pull &lt;model&gt;</code> guidance.</li><li>Preserve retrieved evidence beneath RAG output rather than hiding it.</li><li>Keep salary constraints explicit because a strict wage filter can produce zero results even when semantic matches exist.</li></ul></section>
-</main><footer><div class="wrap">CareerVector v0.3 design documentation · TF-IDF · Sentence Embeddings · Local Ollama RAG</div></footer></body></html>
+</main><footer><div class="wrap">CareerVector v0.4 · Multi-source knowledge base · Hybrid ranking · Local Ollama RAG</div></footer></body></html>

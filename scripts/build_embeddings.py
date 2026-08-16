@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from careervector.config import (  # noqa: E402
     ARTIFACT_DIR,
     DEFAULT_EMBEDDING_MODEL,
-    OCCUPATIONS_PATH,
+    CAREER_ROLES_PATH,
 )
 from careervector.embedding_model import EmbeddingCareerVectorModel  # noqa: E402
 
@@ -28,13 +28,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = build_parser().parse_args()
-    if not OCCUPATIONS_PATH.exists():
+    if not CAREER_ROLES_PATH.exists():
         raise FileNotFoundError(
-            f"{OCCUPATIONS_PATH} does not exist. Run `python scripts/build_dataset.py` first."
+            f"{CAREER_ROLES_PATH} does not exist. Run `python scripts/build_dataset.py` first."
         )
 
-    occupations = pd.read_csv(OCCUPATIONS_PATH)
-    print(f"Building sentence embeddings for {len(occupations):,} occupation documents...")
+    occupations = pd.read_csv(CAREER_ROLES_PATH)
+    print(f"Building sentence embeddings for {len(occupations):,} career-role documents...")
     print(f"Model: {args.model}")
     model = EmbeddingCareerVectorModel.build(
         occupations,

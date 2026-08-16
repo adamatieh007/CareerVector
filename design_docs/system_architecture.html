@@ -15,176 +15,93 @@
       note.textContent = message;
       block.before(note);
     };
-
     if (!window.mermaid) {
       blocks.forEach((block) => fallback(block, 'Mermaid could not load. Diagram source is shown below.'));
       return;
     }
-
     mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: 'loose',
-      theme: 'base',
-      flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: true },
-      sequence: { useMaxWidth: true, wrap: true },
-      themeVariables: {
-        background: '#ffffff', primaryColor: '#eef2ff', primaryTextColor: '#111827',
-        primaryBorderColor: '#4f46e5', secondaryColor: '#ecfeff', secondaryTextColor: '#111827',
-        secondaryBorderColor: '#0891b2', tertiaryColor: '#f8fafc', tertiaryTextColor: '#111827',
-        tertiaryBorderColor: '#64748b', lineColor: '#475569', textColor: '#111827',
-        mainBkg: '#ffffff', nodeBorder: '#64748b', clusterBkg: '#f8fafc', clusterBorder: '#cbd5e1',
-        edgeLabelBackground: '#ffffff', actorBkg: '#eef2ff', actorBorder: '#4f46e5',
-        actorTextColor: '#111827', actorLineColor: '#64748b', signalColor: '#334155',
-        signalTextColor: '#111827', labelBoxBkgColor: '#ffffff', labelBoxBorderColor: '#94a3b8',
-        labelTextColor: '#111827', loopTextColor: '#111827', noteBkgColor: '#fff7ed',
-        noteBorderColor: '#f59e0b', noteTextColor: '#111827', activationBkgColor: '#dbeafe',
-        activationBorderColor: '#2563eb', classText: '#111827'
+      startOnLoad:false, securityLevel:'loose', theme:'base',
+      flowchart:{curve:'basis',htmlLabels:true,useMaxWidth:true},
+      sequence:{useMaxWidth:true,wrap:true},
+      themeVariables:{
+        background:'#ffffff', primaryColor:'#eef2ff', primaryTextColor:'#111827', primaryBorderColor:'#4f46e5',
+        secondaryColor:'#ecfeff', secondaryTextColor:'#111827', secondaryBorderColor:'#0891b2',
+        tertiaryColor:'#f8fafc', tertiaryTextColor:'#111827', tertiaryBorderColor:'#64748b', lineColor:'#475569',
+        textColor:'#111827', mainBkg:'#ffffff', nodeBorder:'#64748b', clusterBkg:'#f8fafc', clusterBorder:'#cbd5e1',
+        edgeLabelBackground:'#ffffff', actorBkg:'#eef2ff', actorBorder:'#4f46e5', actorTextColor:'#111827',
+        actorLineColor:'#64748b', signalColor:'#334155', signalTextColor:'#111827', labelBoxBkgColor:'#ffffff',
+        labelBoxBorderColor:'#94a3b8', labelTextColor:'#111827', loopTextColor:'#111827', noteBkgColor:'#fff7ed',
+        noteBorderColor:'#f59e0b', noteTextColor:'#111827', activationBkgColor:'#dbeafe', activationBorderColor:'#2563eb',
+        classText:'#111827'
       }
     });
-
-    for (let i = 0; i < blocks.length; i += 1) {
-      const block = blocks[i];
-      const source = block.textContent.trim();
-      block.dataset.source = source;
-      try {
-        await mermaid.parse(source);
-        await mermaid.run({ nodes: [block], suppressErrors: false });
-      } catch (error) {
-        fallback(block, `Diagram ${i + 1} could not render: ${error?.message || error}`);
-      }
+    for (let i=0;i<blocks.length;i+=1) {
+      const block=blocks[i]; const source=block.textContent.trim(); block.dataset.source=source;
+      try { await mermaid.parse(source); await mermaid.run({nodes:[block],suppressErrors:false}); }
+      catch(error){ fallback(block, `Diagram ${i+1} could not render: ${error?.message || error}`); }
     }
-    document.documentElement.dataset.mermaidReady = 'true';
+    document.documentElement.dataset.mermaidReady='true';
   });
 </script>
 <style>
-:root { --bg:#0b1020; --panel:#121a2f; --panel2:#17213b; --text:#edf2ff; --muted:#b8c4df; --accent:#8bb0ff; --accent2:#70e1c3; --border:#2a385f; --code:#080d18; }
-* { box-sizing:border-box; }
-body { margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }
-header { border-bottom:1px solid var(--border); background:linear-gradient(135deg,#111a31 0%,#0b1020 65%); }
-.wrap { max-width:1180px; margin:0 auto; padding:38px 28px; }
-h1 { margin:0 0 10px; font-size:clamp(2rem,5vw,3.4rem); line-height:1.05; }
-h2 { margin-top:2.3rem; padding-top:.3rem; border-top:1px solid var(--border); }
-h3 { margin-top:1.8rem; }
-p,li { color:var(--muted); } strong,code { color:var(--text); }
-a { color:var(--accent); text-decoration:none; } a:hover{text-decoration:underline;}
-.eyebrow { text-transform:uppercase; letter-spacing:.14em; color:var(--accent2); font-weight:700; font-size:.78rem; }
-.lede { max-width:900px; font-size:1.08rem; }
-.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
-.card { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
-.card h3 { margin-top:0; }
-.mermaid { background:#fff; color:#111827; border:1px solid #dbe3f0; border-radius:14px; padding:20px; overflow-x:auto; margin:18px 0 28px; min-height:92px; }
-.mermaid svg { display:block; max-width:100%!important; height:auto!important; margin:0 auto; }
-.mermaid svg text,.mermaid svg tspan { fill:#111827!important; }
-.mermaid svg .label,.mermaid svg .nodeLabel,.mermaid svg .edgeLabel,.mermaid svg .messageText,.mermaid svg .loopText,.mermaid svg .noteText,.mermaid svg foreignObject,.mermaid svg foreignObject div,.mermaid svg foreignObject span,.mermaid svg foreignObject p { color:#111827!important; }
-.mermaid-fallback { white-space:pre-wrap; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92rem; line-height:1.55; color:#111827!important; background:#f8fafc; }
-.diagram-status { margin:14px 0 -6px; padding:10px 12px; border-radius:9px; font-size:.88rem; }
-.diagram-status-error { color:#7f1d1d; background:#fef2f2; border:1px solid #fecaca; }
-pre { background:var(--code); border:1px solid var(--border); border-radius:10px; padding:16px; overflow-x:auto; }
-code { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
-table { width:100%; border-collapse:collapse; margin:18px 0; } th,td{border:1px solid var(--border);padding:11px 12px;text-align:left;vertical-align:top;} th{background:var(--panel2);} td{color:var(--muted);}
-.note { border-left:4px solid var(--accent2); background:var(--panel); padding:12px 16px; margin:18px 0; border-radius:0 10px 10px 0; }
-.nav { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }.nav a{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:var(--panel);}
-.badge { display:inline-block; padding:.12rem .48rem; border:1px solid var(--border); border-radius:999px; color:var(--accent2); font-size:.8rem; }
-footer { margin-top:48px; border-top:1px solid var(--border); color:var(--muted); font-size:.9rem; }
+:root{--bg:#0b1020;--panel:#121a2f;--panel2:#17213b;--text:#edf2ff;--muted:#b8c4df;--accent:#8bb0ff;--accent2:#70e1c3;--border:#2a385f;--code:#080d18}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.65}header{border-bottom:1px solid var(--border);background:linear-gradient(135deg,#111a31 0%,#0b1020 65%)}.wrap{max-width:1180px;margin:0 auto;padding:38px 28px}h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05}h2{margin-top:2.3rem;padding-top:.3rem;border-top:1px solid var(--border)}h3{margin-top:1.8rem}p,li{color:var(--muted)}strong,code{color:var(--text)}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.eyebrow{text-transform:uppercase;letter-spacing:.14em;color:var(--accent2);font-weight:700;font-size:.78rem}.lede{max-width:920px;font-size:1.08rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px}.card h3{margin-top:0}.mermaid{background:#fff;color:#111827;border:1px solid #dbe3f0;border-radius:14px;padding:20px;overflow-x:auto;margin:18px 0 28px;min-height:92px}.mermaid svg{display:block;max-width:100%!important;height:auto!important;margin:0 auto}.mermaid svg text,.mermaid svg tspan{fill:#111827!important}.mermaid svg .label,.mermaid svg .nodeLabel,.mermaid svg .edgeLabel,.mermaid svg .messageText,.mermaid svg .loopText,.mermaid svg .noteText,.mermaid svg foreignObject,.mermaid svg foreignObject div,.mermaid svg foreignObject span,.mermaid svg foreignObject p{color:#111827!important}.mermaid-fallback{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;line-height:1.55;color:#111827!important;background:#f8fafc}.diagram-status{margin:14px 0 -6px;padding:10px 12px;border-radius:9px;font-size:.88rem}.diagram-status-error{color:#7f1d1d;background:#fef2f2;border:1px solid #fecaca}pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em}table{width:100%;border-collapse:collapse;margin:18px 0}th,td{border:1px solid var(--border);padding:11px 12px;text-align:left;vertical-align:top}th{background:var(--panel2)}td{color:var(--muted)}.note{border-left:4px solid var(--accent2);background:var(--panel);padding:12px 16px;margin:18px 0;border-radius:0 10px 10px 0}.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.nav a{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:var(--panel)}.badge{display:inline-block;padding:.12rem .48rem;border:1px solid var(--border);border-radius:999px;color:var(--accent2);font-size:.8rem}footer{margin-top:48px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
 </style>
-</head>
-<body><header><div class="wrap"><div class="eyebrow">CareerVector Engineering Design · v0.3</div><h1>System Architecture</h1><p class="lede">Component boundaries, runtime control flow, offline model builds, and the local Ollama process boundary.</p><div class="nav">
-<a href="index.html">Design Index</a>
-<a href="system_architecture.html">System Architecture</a>
-<a href="data_pipeline.html">Data Pipeline</a>
-<a href="retrieval_engines.html">Retrieval Engines</a>
-<a href="rag_workflow.html">RAG Workflow</a>
-<a href="ui_request_flow.html">UI & Request Flow</a>
-<a href="testing_and_evolution.html">Testing & Evolution</a>
-</div></div></header>
-<main class="wrap">
-<section><h2>1. Architectural Goals</h2><p>CareerVector separates offline corpus/model construction from online recommendation. RAG extends the runtime path without changing the underlying dataset or requiring a vector database.</p></section>
-<section><h2>2. Component Architecture</h2><div class="mermaid">
+</head><body><header><div class="wrap"><div class="eyebrow">CareerVector Engineering Design · v0.4</div><h1>System Architecture</h1><p class="lede">Top-level modules, offline build stages, runtime recommendation paths, and local process boundaries.</p><div class="nav">
+<a href="index.html">Design Index</a><a href="system_architecture.html">System Architecture</a><a href="career_knowledge_base.html">Career Knowledge Base</a><a href="data_pipeline.html">Data Pipeline</a><a href="retrieval_engines.html">Retrieval & Ranking</a><a href="rag_workflow.html">RAG Workflow</a><a href="ui_request_flow.html">UI & Request Flow</a><a href="testing_and_evolution.html">Testing & Evolution</a>
+</div></div></header><main class="wrap">
+<section><h2>Component Architecture</h2><div class="mermaid">
 flowchart TB
-  subgraph Presentation[Presentation]
-    ST[app.py Streamlit]
-    CLI[cli.py CLI]
-  end
-  subgraph Domain[Domain]
-    CP[profile.py CareerProfile]
-    TXT[text.py normalization]
-  end
-  subgraph Retrieval[Retrieval]
-    TF[model.py TF-IDF]
-    EM[embedding_model.py embeddings]
-  end
-  subgraph RAG[RAG Layer]
-    CTX[rag/context.py]
-    PR[rag/prompts.py]
-    SVC[rag/service.py]
-    OL[rag/ollama.py]
-  end
-  subgraph Data[Offline Data]
-    DS[dataset.py]
-    CFG[config.py]
-  end
-  subgraph Storage[Local Storage]
-    RAW[(data/raw)]
-    PROC[(data/processed)]
-    ART[(artifacts)]
-  end
-  ST --> CP
-  CLI --> CP
-  CP --> TF
-  CP --> EM
-  ST --> SVC
-  CLI --> SVC
-  SVC --> EM
-  SVC --> CTX
-  SVC --> PR
-  SVC --> OL
-  TF --> ART
-  EM --> ART
-  DS --> RAW
-  DS --> PROC
-  CFG --> DS
-  CFG --> EM
-  CFG --> OL
+ subgraph Offline[Offline build]
+  DL[download_data.py] --> RAW[(data/raw)]
+  RAW --> DS[dataset.py]
+  DS --> OCC[(occupations.csv)]
+  DS --> ROLES[(career_roles.csv)]
+  ROLES --> TFBUILD[train_tfidf.py]
+  ROLES --> EMBUILD[build_embeddings.py]
+  TFBUILD --> ART[(artifacts)]
+  EMBUILD --> ART
+ end
+ subgraph Core[Application core]
+  PROF[profile.py] --> TF[model.py]
+  PROF --> EM[embedding_model.py]
+  AC[academic.py] --> RK[ranking.py]
+  RK --> TF
+  RK --> EM
+ end
+ subgraph Presentation[Presentation]
+  APP[app.py] --> PROF
+  CLI[cli.py] --> PROF
+ end
+ ART --> TF
+ ART --> EM
+ TF --> APP
+ EM --> APP
+ EM --> RAG[rag/service.py]
+ RAG --> OLL[Local Ollama]
+ RAG --> APP
 </div></section>
-<section><h2>3. RAG Runtime Boundary</h2><div class="mermaid">
-flowchart LR
-    APP[CareerVector process] --> RET[Embedding retriever]
-    RET --> EV[Retrieved evidence]
-    APP --> CLIENT[OllamaClient]
-    CLIENT --> API[localhost:11434 api chat]
-    API --> LLM[Local model]
-    LLM --> API
-    API --> CLIENT
-    CLIENT --> APP
-</div><div class="note">The Ollama server is a local process boundary. CareerVector does not import an Ollama orchestration framework; it uses the REST API directly.</div></section>
-<section><h2>4. Runtime Sequence</h2><div class="mermaid">
+<section><h2>Runtime Request</h2><div class="mermaid">
 sequenceDiagram
-    actor User
-    participant UI as Streamlit or CLI
-    participant Profile as CareerProfile
-    participant Retriever as Embedding Retriever
-    participant Context as Context Builder
-    participant Ollama as Local Ollama API
-    User->>UI: Submit profile in RAG mode
-    UI->>Profile: Normalize structured inputs
-    UI->>Retriever: recommend profile, topK
-    Retriever-->>UI: Ranked occupations and evidence
-    UI->>Context: build CV source blocks
-    Context-->>UI: CV1 to CVK grounding context
-    UI->>Ollama: POST api chat with profile and evidence
-    Ollama-->>UI: Markdown explanation with CV citations
-    UI-->>User: Explanation plus evidence cards
+ actor User
+ participant UI as Streamlit
+ participant P as CareerProfile
+ participant M as Retriever
+ participant R as Hybrid ranking
+ participant A as Artifacts
+ participant O as Ollama
+ User->>UI: Enter major, concentration, interests, skills
+ UI->>P: Build structured profile
+ UI->>M: recommend(profile)
+ M->>A: Load vectors + role metadata
+ M->>M: Compute retrieval score
+ M->>R: Blend title, academic, outlook signals
+ R-->>UI: Diversified Top-K career roles
+ alt RAG mode
+  UI->>O: Send retrieved evidence only
+  O-->>UI: Grounded cited explanation
+ end
+ UI-->>User: Results + evidence
 </div></section>
-<section><h2>5. Offline Build Path</h2><div class="mermaid">
-flowchart LR
-    DL[download_data.py] --> RAW[Raw O*NET and BLS]
-    RAW --> BD[build_dataset.py]
-    BD --> O[occupations.csv]
-    O --> TT[train_tfidf.py]
-    O --> BE[build_embeddings.py]
-    TT --> TA[TF-IDF artifacts]
-    BE --> EA[Embedding artifacts]
-    EA --> RAG[RAG retrieval]
-</div></section>
-<section><h2>6. Repository Responsibilities</h2><table><thead><tr><th>Module</th><th>Responsibility</th></tr></thead><tbody><tr><td><code>rag/context.py</code></td><td>Transforms retrieved result dictionaries into bounded, citation-addressable evidence blocks.</td></tr><tr><td><code>rag/prompts.py</code></td><td>Defines grounding rules and builds the user-profile plus evidence prompt.</td></tr><tr><td><code>rag/ollama.py</code></td><td>Lists installed local models and calls <code>/api/chat</code> with non-streaming requests.</td></tr><tr><td><code>rag/service.py</code></td><td>Coordinates retrieval, context construction, prompt construction, generation, and response packaging.</td></tr><tr><td><code>app.py</code></td><td>Three-mode UI, local model selection, error feedback, generated answer rendering, and evidence inspection.</td></tr></tbody></table></section>
-</main><footer><div class="wrap">CareerVector v0.3 design documentation · TF-IDF · Sentence Embeddings · Local Ollama RAG</div></footer></body></html>
+<section><h2>Module Responsibilities</h2><table><tr><th>Module</th><th>Responsibility</th></tr><tr><td><code>dataset.py</code></td><td>Parse official datasets, normalize SOC keys, enrich parent occupations, expand role titles, and optionally import ESCO.</td></tr><tr><td><code>academic.py</code></td><td>Independent fuzzy/lexical comparison between user academic fields and NCES CIP program labels.</td></tr><tr><td><code>ranking.py</code></td><td>Role-title signal, BLS outlook signal, weighted fusion, and parent-family diversity.</td></tr><tr><td><code>model.py</code></td><td>TF-IDF retrieval plus shared structured ranking.</td></tr><tr><td><code>embedding_model.py</code></td><td>Dense semantic retrieval plus shared structured ranking.</td></tr><tr><td><code>rag/</code></td><td>Evidence packaging, Ollama HTTP boundary, prompt rules, and generation orchestration.</td></tr></table></section>
+</main><footer><div class="wrap">CareerVector v0.4 · Multi-source knowledge base · Hybrid ranking · Local Ollama RAG</div></footer></body></html>

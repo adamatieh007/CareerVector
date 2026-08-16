@@ -8,18 +8,18 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from careervector.config import ARTIFACT_DIR, OCCUPATIONS_PATH  # noqa: E402
+from careervector.config import ARTIFACT_DIR, CAREER_ROLES_PATH  # noqa: E402
 from careervector.model import CareerVectorModel  # noqa: E402
 
 
 def main() -> None:
-    if not OCCUPATIONS_PATH.exists():
+    if not CAREER_ROLES_PATH.exists():
         raise FileNotFoundError(
-            f"{OCCUPATIONS_PATH} does not exist. Run `python scripts/build_dataset.py` first."
+            f"{CAREER_ROLES_PATH} does not exist. Run `python scripts/build_dataset.py` first."
         )
 
-    occupations = pd.read_csv(OCCUPATIONS_PATH)
-    print(f"Training TF-IDF on {len(occupations):,} occupation documents...")
+    occupations = pd.read_csv(CAREER_ROLES_PATH)
+    print(f"Training TF-IDF on {len(occupations):,} career-role documents...")
     model = CareerVectorModel.train(occupations)
     model.save(ARTIFACT_DIR)
     print(f"TF-IDF matrix shape: {model.matrix.shape}")
